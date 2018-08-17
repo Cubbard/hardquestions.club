@@ -1,0 +1,22 @@
+{
+  "name": "hardquestions.club",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": ""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "body-parser": "^1.18.3",
+    "express": "^4.16.3",
+    "pug": "^2.0.3"
+  },
+  "dependencies": {
+    "date-and-time": "^0.6.2",
+    "dotenv": "^6.0.0",
+    "promise-mysql": "^3.3.1"
+  }
+}
