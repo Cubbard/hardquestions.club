@@ -2,15 +2,14 @@ const date = require('date-and-time');
 
 class Task
 {
-    constructor(name, descr, group, type) {
-        this.name  = name;
+    constructor(title, descr, group) {
+        this.title = title;
         this.descr = descr;
         this.group = group;
-        this.type  = type;
 
         const now  = new Date(Date.now());
         const str = date.format(now, 'YYYY-MM-DD HH:mm:ss');
-        this.expires = arguments[4] || str;
+        this.expires = arguments[3] || str;
     }
 
     static get A() { // animal
@@ -34,6 +33,4 @@ class Task
     }
 }
 
-if (module !== undefined) {
-    module.exports = Task;
-}
+module.exports = Task;
