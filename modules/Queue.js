@@ -39,15 +39,16 @@ class Queue extends Model
             throw 'A task and task type is required!';
         
         let oldTail = await Queue.query().where('group_type', '=', task.group_type).andWhere('is_active', '=', 1).whereNull('next').first();
-        
-        let newTail;
+        let newTail, is_head = oldTail ? 0 : 1;
         if (task.uuid)
-            newTail = await Queue.query().patchAndFetchById(task.uuid, {is_active: 1});
-        else
+            newTail = await Queue.query().patchAndFetchById(task.uuid, {is_head, is_active: 1});
+        else {
+            task.is_head = is_head;
             newTail = await Queue.query().insert(task);
+        }
 
         return new Promise( (resolve, reject) => {
-            oldTail.$query().patch({next: newTail.uuid}).then( result => {
+            (oldTail || newTail).$query().patch({ next: oldTail ? newTail.uuid : null }).then( result => {
                 resolve(newTail);
             });
         });
@@ -59,16 +60,16 @@ class Queue extends Model
         
         const oldHead = await Queue.query().where('group_type', '=', type).andWhere('is_head', '=', 1).first();
         if (!oldHead)
-            return 'null'
+            return null;
+        
+        let resolution = [ oldHead.$query().patch({is_head: 0, is_active: 0, next: null}) ];
 
         const newHead = await oldHead.$relatedQuery('nextTask');
+        if (newHead)
+            resolution.push(newHead.$query().patch({is_head: 1}));
 
         return new Promise( (resolve, reject) => {
-            Promise.all(newHead ? [
-                newHead.$query().patch({is_head: 1}),
-                oldHead.$query().patch({is_head: 0, is_active: 0, next: null}),
-            ] : [] )
-            .then( results => {
+            Promise.all(resolution).then( results => {
                 resolve(oldHead);
             });
         });

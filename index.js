@@ -18,9 +18,10 @@ app.set('view engine', 'pug');
 app.get('/push', async ( req, res ) => {
     let task = new Task('ahh1!', 'descriptive baby', Task.A);
 
+    let count = await Queue.query().count('uuid as num');
     let params = {
         group_type  : task.group,
-        title       : task.title,
+        title       : task.title + ' ' + count[0].num,
         descr       : task.descr,
         expires     : task.expires
     };
@@ -40,6 +41,14 @@ app.get('/pop', async ( req, res ) => {
     .catch( err => {
         throw err;
     });
+});
+
+app.get('/pop-and-push', async ( req, res ) => {
+    Queue.pop(Task.A).then( head => {
+        Queue.push({uuid: head.uuid, group_type: Task.A}).then( tail => {
+            res.send(tail);
+        });
+    })
 });
 
 app.listen(3000, () => console.log('listening on 3000!'));
