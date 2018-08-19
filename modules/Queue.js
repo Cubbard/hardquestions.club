@@ -1,60 +1,78 @@
 require('dotenv').config()
-const mysql = require('promise-mysql');
 
-class Queue
+const mysql = require('promise-mysql');
+const Model = require('./db.js');
+
+
+class Queue extends Model
 /**
- * The idea here is to have the queue facilitate
- * all sql (or no-sql) operations pertaining to tasks
+ * Queue implementation using objection.js
  */
 {
-    constructor() {
-        this.ready = false; // might be a dumb way to do things...
-
-        this.headQuery = 'select * from task_queue where is_head = 1';
-        this.tailQuery = 'select * from task_queue where next is NULL';
-
-        this.connection = mysql.createConnection({
-            host: process.env.DB_HOST,
-            user: process.env.DB_USER,
-            password: process.env.DB_PASSWORD,
-            database: process.env.DB
-        });
+    static get tableName() {
+        return 'task_queue';
     }
 
-    push(task) {
+    static get idColumn() {
+        return 'uuid';
+    }
+
+    static get relationMappings() {
+        return {
+            nextTask: {
+                relation: Model.BelongsToOneRelation,
+                modelClass: Queue,
+                join: {
+                    from: 'task_queue.next',
+                    to: 'task_queue.uuid'
+                }
+            }
+        }
+    }
+
+    /**
+     * Custom methods
+     */
+
+    static async push(task) {
+        if (!task)
+            throw 'A task and task type is required!';
+        
+        let oldTail = await Queue.query().where('group_type', '=', task.group_type).andWhere('is_active', '=', 1).whereNull('next').first();
+        
+        let newTail;
+        if (task.uuid)
+            newTail = await Queue.query().patchAndFetchById(task.uuid, {is_active: 1});
+        else
+            newTail = await Queue.query().insert(task);
+
         return new Promise( (resolve, reject) => {
-            this.connection.then(async conn => {
-                const old_tail = await conn.query(this.tailQuery);
-                const new_tail = await conn.query(`insert into task_queue (group_type, task_type, title, descr, expires) \
-                    values ('${task.group}', '${task.type}', '${task.name}', '${task.descr}', '${task.expires}')`);
-                
-                const set_next = await conn.query(`update task_queue set next = ${new_tail.insertId} where uuid = ${old_tail[0].uuid}`);
-                resolve(set_next);
+            oldTail.$query().patch({next: newTail.uuid}).then( result => {
+                resolve(newTail);
             });
         });
     }
+    
+    static async pop(type) {
+        if (!type)
+            throw 'A task type is required!';
+        
+        const oldHead = await Queue.query().where('group_type', '=', type).andWhere('is_head', '=', 1).first();
+        if (!oldHead)
+            return 'null'
 
-    pop() {
-        return new Promise( async (resolve, rejext) => {
-            this.connection.then(async conn => {
-                // This is all super awful but will improve later
+        const newHead = await oldHead.$relatedQuery('nextTask');
 
-                const old_head = await conn.query(this.headQuery);
-                const old_tail = await conn.query(this.tailQuery);
-
-                // TODO: set is_prev = 0 before updating it on former head
-                const set_head = await conn.query(`update task_queue set is_head = 1 where uuid = ${old_head[0].next}`);
-                const rem_head = await conn.query(`update task_queue set is_head = 0 where uuid = ${old_head[0].uuid}`);
-                const set_prev = await conn.query(`update task_queue set is_prev = 1 where uuid = ${old_head[0].uuid}`);
-                const set_tail = await conn.query(`update task_queue set next = ${old_head[0].uuid} where uuid = ${old_tail[0].uuid}`);
-                const set_next = await conn.query(`update task_queue set next = NULL where uuid = ${old_head[0].uuid}`);
-
-                resolve(old_head);
-            })
-        })
+        return new Promise( (resolve, reject) => {
+            Promise.all(newHead ? [
+                newHead.$query().patch({is_head: 1}),
+                oldHead.$query().patch({is_head: 0, is_active: 0, next: null}),
+            ] : [] )
+            .then( results => {
+                resolve(oldHead);
+            });
+        });
     }
-}
+};
 
-if (module !== undefined) {
-    module.exports = Queue;
-}
+module.exports = Queue;

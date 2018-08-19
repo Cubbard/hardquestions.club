@@ -4,8 +4,8 @@
  * YYYY-MM-DD HH:MM:SS 
  */
 
-insert into task_queue (group_type, title, descr, is_head, is_prev, expires)
-    values ('A', 'Animal Task', 'This is a test task', 1, 1, '2019-05-25 23:59:59');
+insert into task_queue (group_type, title, descr, is_head, expires)
+    values ('A', 'Animal Task', 'This is a test task', 1, '2019-05-25 23:59:59');
 
 insert into task_queue (group_type, title, descr, expires)
     values ('A', 'Animal Task 2', 'This is a test task', '2019-05-25 23:59:59');
