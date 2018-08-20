@@ -6,7 +6,7 @@ drop table if exists task_queue;
 
 create table task_queue (
     uuid        bigint auto_increment primary key,
-    next        bigint,
+    next        bigint null,
     group_type  char(1),
     task_type   char(1),
     title       varchar(128) not null,

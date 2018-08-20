@@ -4,11 +4,14 @@ const express = require('express');
 const app     = express();
 
 const bodyParser = require('body-parser');
+const randString = require('random-string');
 
 /* dev modules */
-const Queue = require('./modules/Queue.js');
-const Task  = require('./modules/Task.js');
-const date  = require('date-and-time');
+const Queue  = require('./modules/Queue.js');
+const Task   = require('./modules/Task.js');
+const Crypto = require('./modules/Crypto.js');
+const User   = require('./modules/User.js');
+const date   = require('date-and-time');
 
 /* app config */
 app.use(bodyParser.json());
@@ -50,5 +53,28 @@ app.get('/pop-and-push', async ( req, res ) => {
         });
     })
 });
+
+app.post('/createUser', ( req, res ) => {
+    // identity, password
+    let params  = { identity: req.body.identity },
+        salt    = randString({ special: true, length: 4 });
+    
+    let passwordHash = Crypto.hash(req.body.password, salt);
+
+    params.pass_hash = passwordHash;
+    params.salt      = salt;
+    User.query().insert(params).then( user => {
+        res.send(user);
+    })
+});
+
+app.post('/tryUser', async ( req, res ) => {
+    let identity = req.body.identity;
+    let password = req.body.password;
+    let result = await Crypto.tryUser(identity, password);
+
+    res.send(result);
+});
+
 
 app.listen(3000, () => console.log('listening on 3000!'));

@@ -1,6 +1,5 @@
 require('dotenv').config()
 
-const mysql = require('promise-mysql');
 const Model = require('./db.js');
 
 
@@ -62,7 +61,9 @@ class Queue extends Model
         if (!oldHead)
             return null;
         
-        let resolution = [ oldHead.$query().patch({is_head: 0, is_active: 0, next: null}) ];
+        let resolution = [
+            oldHead.$query().patch({is_head: 0, is_active: 0, next: null})
+        ];
 
         const newHead = await oldHead.$relatedQuery('nextTask');
         if (newHead)

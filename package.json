@@ -15,11 +15,14 @@
     "pug": "^2.0.3"
   },
   "dependencies": {
+    "alphabet": "^1.0.0",
     "date-and-time": "^0.6.2",
     "dotenv": "^6.0.0",
     "knex": "^0.15.2",
     "mysql": "^2.16.0",
     "objection": "^1.2.2",
-    "promise-mysql": "^3.3.1"
+    "promise-mysql": "^3.3.1",
+    "random-string": "^0.2.0",
+    "sha256": "^0.2.0"
   }
 }
