@@ -1,11 +1,17 @@
-const sha256   = require('sha256');
-const date     = require('date-and-time');
-const alphabet = require('alphabet');
-const User     = require('./User.js');
+const sha256     = require('sha256');
+const date       = require('date-and-time');
+const alphabet   = require('alphabet');
+const User       = require('./User.js');
+const randString = require('random-string');
+
 
 class Crypto
 {
-    static randomPepper() {
+    static getSalt() {
+        return randString({ special: true, length: 4 });
+    } 
+
+    static getPepper() {
         let randI1, randI2, letter1, letter2, isLower;
 
         randI1 = Math.floor(Math.random() * 25);
@@ -29,44 +35,42 @@ class Crypto
     static async tryUser(identity, password) {
         let user = await User.query().where('identity', '=', identity).first();
         if (!user)
-            return false;
+            return null;
 
-        const salt = user.salt;
-        const hash = user.pass_hash;
         for (let i = 0; i < 26; i++) {
-            for (let j = 0; j < 26; j++)
-            {
-                let tryStr;
+            for (let j = 0; j < 26; j++) {
+                for (let k = 0; k < password.length; k++)
+                {
+                    let tryHash = [];
+                    // AA
+                    tryHash.push(sha256(password.substring(0, k) 
+                        + alphabet[i] + alphabet[j] + password.substring(k) + user.salt));
 
-                const first = password.substring(0, Math.floor(password.length / 2));
-                const secon = password.substring(Math.floor(password.length / 2));
+                    // Aa
+                    tryHash.push(sha256(password.substring(0, k) 
+                        + alphabet[i] + alphabet[j].toLowerCase() + password.substring(k) + user.salt));
 
-                tryStr = sha256(first + alphabet[i] + alphabet[j] + secon + salt); // AA
-                if (tryStr === hash)
-                    return true;
-                
-                tryStr = sha256(first + alphabet[i] + alphabet[j].toLowerCase() + secon + salt); // Aa
-                if (tryStr === hash)
-                    return true;
+                    // aA
+                    tryHash.push(sha256(password.substring(0, k) 
+                        + alphabet[i].toLowerCase() + alphabet[j] + password.substring(k) + user.salt));
 
-                tryStr = sha256(first + alphabet[i].toLowerCase() + alphabet[j] + secon + salt); // aA
-                if (tryStr === hash)
-                    return true;
+                    // aa
+                    tryHash.push(sha256(password.substring(0, k) 
+                        + alphabet[i].toLowerCase() + alphabet[j].toLowerCase() + password.substring(k) + user.salt));
 
-                tryStr = sha256(first + alphabet[i].toLowerCase() + alphabet[j].toLowerCase() + secon + salt); // aa
-                if (tryStr === hash)
-                    return true;
+                    if (tryHash.includes(user.pass_hash)) return user;
+                }
+
             }
         }
-        return false;
+        return null;
     }
 
-    static hash(message, salt) {
-        const first  = message.substring(0, Math.floor(message.length / 2));
-        const secon = message.substring(Math.floor(message.length / 2));
+    static getHash(message) {
+        const mLength = message.length;
+        const randPos = Math.floor(Math.random() * mLength);
 
-        let newMsg = first + this.randomPepper() + secon + salt;
-        return sha256(newMsg);
+        return sha256(message.substring(0, randPos) + this.getPepper() + message.substring(randPos) + this.getSalt());
     }
 
 }

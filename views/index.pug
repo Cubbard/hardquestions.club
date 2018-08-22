@@ -1,8 +1,10 @@
-doctype html
-head
-    meta(http-equiv='content-type', value='text/html;charset=UTF-8')
-    title HARDQUESTIONS.CLUB
-body
-    h1 Hello #{queue.get('title')}!
+extends templates/master.pug
+
+block content
+    h1 Welcome!
+    p
+        a(href="/login") login 
+    p
+        a(href="/register") register
 
 

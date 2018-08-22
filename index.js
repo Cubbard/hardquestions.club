@@ -11,13 +11,34 @@ const Queue  = require('./modules/Queue.js');
 const Task   = require('./modules/Task.js');
 const Crypto = require('./modules/Crypto.js');
 const User   = require('./modules/User.js');
+
+/* included modules */
 const date   = require('date-and-time');
 
+/* methods I should move to modules */
+const getSalt = () => randString({ special: true, length: 4 });
+
 /* app config */
-app.use(bodyParser.json());
+app.use(bodyParser());
 app.use('/public', express.static('./public'));
 app.set('view engine', 'pug');
 
+/* app routes */
+app.get('/', ( req, res ) => {
+    res.render('index', { page: 'Home' });
+});
+
+app.get('/login', ( req, res ) => {
+    res.render('login', { page: 'Login' });
+})
+
+app.post('/login', ( req, res ) => {
+    Crypto.tryUser(req.body.identity, req.body.password).then( worked => {
+        res.send(worked ? worked : 'bad credentials');
+    });
+});
+
+/* routes for testing */
 app.get('/push', async ( req, res ) => {
     let task = new Task('ahh1!', 'descriptive baby', Task.A);
 
