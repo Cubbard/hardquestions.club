@@ -16,8 +16,11 @@
   },
   "dependencies": {
     "alphabet": "^1.0.0",
+    "connect-memcached": "^1.0.0",
+    "cookie-parser": "^1.4.3",
     "date-and-time": "^0.6.2",
     "dotenv": "^6.0.0",
+    "express-session": "^1.15.6",
     "knex": "^0.15.2",
     "mysql": "^2.16.0",
     "objection": "^1.2.2",

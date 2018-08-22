@@ -1,10 +1,15 @@
 'use strict';
 
+/* app bootstrap */
 const express = require('express');
 const app     = express();
 
+/* app state */
 const bodyParser = require('body-parser');
-const randString = require('random-string');
+const cookParser = require('cookie-parser');
+const session    = require('express-session');
+
+const date = require('date-and-time');
 
 /* dev modules */
 const Queue  = require('./modules/Queue.js');
@@ -12,90 +17,73 @@ const Task   = require('./modules/Task.js');
 const Crypto = require('./modules/Crypto.js');
 const User   = require('./modules/User.js');
 
-/* included modules */
-const date   = require('date-and-time');
-
-/* methods I should move to modules */
-const getSalt = () => randString({ special: true, length: 4 });
 
 /* app config */
+app.use(cookParser());
 app.use(bodyParser());
+app.use(session({
+    secret: process.env.SESSION_SECRET,
+    secure: false,
+    cookie: {
+        maxAge: 600000
+    }
+}));
+
 app.use('/public', express.static('./public'));
 app.set('view engine', 'pug');
 
+/**
+ *  TODO: find something better than 'excludesAuth', 'requiresAuth' paradigm
+ */
+
 /* app routes */
-app.get('/', ( req, res ) => {
+app.get('/', excludesAuth, ( req, res ) => {
     res.render('index', { page: 'Home' });
 });
 
-app.get('/login', ( req, res ) => {
+app.get('/login', excludesAuth, ( req, res ) => {
     res.render('login', { page: 'Login' });
 })
 
-app.post('/login', ( req, res ) => {
-    Crypto.tryUser(req.body.identity, req.body.password).then( worked => {
-        res.send(worked ? worked : 'bad credentials');
+app.post('/login', excludesAuth, ( req, res ) => {
+    Crypto.tryUser(req.body.identity, req.body.password).then( user => {
+        if (user) {
+            req.session.userid = user.id;
+            res.redirect('/profile');
+        } else {
+            res.redirect('/');
+        }
     });
 });
 
-/* routes for testing */
-app.get('/push', async ( req, res ) => {
-    let task = new Task('ahh1!', 'descriptive baby', Task.A);
-
-    let count = await Queue.query().count('uuid as num');
-    let params = {
-        group_type  : task.group,
-        title       : task.title + ' ' + count[0].num,
-        descr       : task.descr,
-        expires     : task.expires
-    };
-
-    Queue.push(params).then( result => {
-        res.send(result);
-    })
-    .catch( err => {
-        throw err;
-    });
-});
-
-app.get('/pop', async ( req, res ) => {
-    Queue.pop(Task.A).then( result => {
-        res.send(result);
-    })
-    .catch( err => {
-        throw err;
-    });
-});
-
-app.get('/pop-and-push', async ( req, res ) => {
-    Queue.pop(Task.A).then( head => {
-        Queue.push({uuid: head.uuid, group_type: Task.A}).then( tail => {
-            res.send(tail);
-        });
+app.get('/logout', requiresAuth, ( req, res ) => {
+    req.session.destroy( errors => {
+        res.redirect('/');
     })
 });
 
-app.post('/createUser', ( req, res ) => {
-    // identity, password
-    let params  = { identity: req.body.identity },
-        salt    = randString({ special: true, length: 4 });
-    
-    let passwordHash = Crypto.hash(req.body.password, salt);
-
-    params.pass_hash = passwordHash;
-    params.salt      = salt;
-    User.query().insert(params).then( user => {
-        res.send(user);
+app.get('/profile', requiresAuth, ( req, res ) => {
+    User.query().findById(req.session.userid).then( user => {
+        res.render('profile', { identity: user.identity, score: user.score });
     })
 });
 
-app.post('/tryUser', async ( req, res ) => {
-    let identity = req.body.identity;
-    let password = req.body.password;
-    let result = await Crypto.tryUser(identity, password);
+/* middleware */
+function excludesAuth(req, res, next) {
+    if (req.session.userid) {
+        res.redirect('/profile');
+    } else {
+        next();
+    }
+}
 
-    res.send(result);
-});
-
+function requiresAuth(req, res, next) {
+    console.log(req.session.id);
+    if (req.session.userid) {
+        next();
+    } else {
+        res.redirect('/');
+    }
+}
 
 app.listen(3000, () => console.log('listening on 3000!'));
