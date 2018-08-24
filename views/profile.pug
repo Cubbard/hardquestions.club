@@ -1,0 +1,7 @@
+extends templates/master.pug
+
+block content
+    h1 Welcome!
+    .user #{identity + ' ' + score}
+        p
+            a(href="/app/logout") logout
