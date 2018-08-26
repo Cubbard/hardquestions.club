@@ -5,7 +5,7 @@
 drop table if exists task_queue;
 
 create table task_queue (
-    uuid        bigint auto_increment primary key,
+    id          bigint auto_increment primary key,
     next        bigint null,
     group_type  char(1),
     task_type   char(1),
@@ -15,5 +15,5 @@ create table task_queue (
     is_active   int(1) not null default 1,
     expires     datetime,
 
-    foreign key(next) references task_queue(uuid)
+    foreign key(next) references task_queue(id)
 );

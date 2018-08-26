@@ -5,3 +5,23 @@ block content
     .user #{identity + ' ' + score}
         p
             a(href="/app/logout") logout
+    if !queues.none
+        include includes/taskQueue.pug
+
+block scripts
+    if !queues.none
+        script.
+            const tasks = document.querySelectorAll('.task.head');
+            (function loop() {
+                    setTimeout(loop, 1000);
+                    tasks.forEach(task => {
+                        const remaining = parseInt(task.dataset.expires)- Date.now().valueOf();
+                        const date = {
+                            days: Math.round(remaining / 1000 / 60 / 60 / 24),
+                            mins: Math.round(remaining / 1000 / 60),
+                            secs: Math.round(remaining / 1000)
+                        }
+                        task.querySelector('footer span').innerHTML = `days: ${date.days}, min: ${date.mins}, secs: ${date.secs}`;
+                    })
+                }
+            )();

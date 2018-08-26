@@ -12,10 +12,6 @@ class Queue extends Model
         return 'task_queue';
     }
 
-    static get idColumn() {
-        return 'uuid';
-    }
-
     static get relationMappings() {
         return {
             nextTask: {
@@ -23,7 +19,7 @@ class Queue extends Model
                 modelClass: Queue,
                 join: {
                     from: 'task_queue.next',
-                    to: 'task_queue.uuid'
+                    to: 'task_queue.id'
                 }
             }
         }
@@ -39,15 +35,15 @@ class Queue extends Model
         
         let oldTail = await Queue.query().where('group_type', '=', task.group_type).andWhere('is_active', '=', 1).whereNull('next').first();
         let newTail, is_head = oldTail ? 0 : 1;
-        if (task.uuid)
-            newTail = await Queue.query().patchAndFetchById(task.uuid, {is_head, is_active: 1});
+        if (task.id)
+            newTail = await Queue.query().patchAndFetchById(task.id, {is_head, is_active: 1});
         else {
             task.is_head = is_head;
             newTail = await Queue.query().insert(task);
         }
 
         return new Promise( (resolve, reject) => {
-            (oldTail || newTail).$query().patch({ next: oldTail ? newTail.uuid : null }).then( result => {
+            (oldTail || newTail).$query().patch({ next: oldTail ? newTail.id : null }).then( result => {
                 resolve(newTail);
             });
         });

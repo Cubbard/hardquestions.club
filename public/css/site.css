@@ -1,0 +1,40 @@
+html, html * {
+    box-sizing: border-box;
+}
+
+.queue {
+    min-height: 2em;
+    padding: 3px;
+    color: white;
+    margin-bottom: 16px;
+}
+
+.queue .task {
+    border: 1px solid white;
+    padding: 3px;
+    margin-bottom: 8px;
+}
+
+.queue .task:last-of-type {
+    margin-bottom: 0;
+}
+
+.queue[data-type='A'] {
+    background-color: green;
+}
+
+.queue[data-type='S'] {
+    background-color: yellow;
+}
+
+.queue[data-type='K'] {
+    background-color: red;
+}
+
+.queue[data-type='L'] {
+    background-color: pink;
+}
+
+.queue[data-type='Q'] {
+    background-color: purple;
+}

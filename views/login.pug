@@ -1,6 +1,8 @@
 extends templates/master.pug
 
 block content
+    include includes/nav.pug
+    
     form(action="/login", method="POST")
         label(for="name") Identity
         input(type="text", name="identity")
