@@ -1,15 +1,16 @@
 extends templates/master.pug
 
 block content
+    - let queen = queues && !queues.none;
     h1 Welcome!
-    .user #{identity + ' ' + score}
+    .user #{identity + ' - ' + (!isNaN(score) ? score : "Not a part of the current cycle")}
         p
             a(href="/app/logout") logout
-    if !queues.none
+    if queen
         include includes/taskQueue.pug
 
 block scripts
-    if !queues.none
+    if queen
         script.
             const tasks = document.querySelectorAll('.task.head');
             (function loop() {
