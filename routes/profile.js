@@ -19,7 +19,6 @@ router.get('/profile', checkExpiration, (req, res) => {
             return;
         }
 
-        console.log('made it');
         let queues = {
             none: true,
             'A': [],
@@ -29,7 +28,7 @@ router.get('/profile', checkExpiration, (req, res) => {
             'Q': []
         };
         if (group_type === 'Q') {
-            tasks = await Queue.query();
+            tasks = await Queue.query().orderBy('queue_order', 'asc');
             tasks.forEach(task => {
                 queues[task.group_type].push(task);
             });

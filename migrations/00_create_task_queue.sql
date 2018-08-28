@@ -13,6 +13,7 @@ create table task_queue (
     descr       varchar(256) not null,
     is_head     int(1) not null default 0,
     is_active   int(1) not null default 1,
+    queue_order bigint not null default 0,
     expires     datetime,
 
     foreign key(next) references task_queue(id)
