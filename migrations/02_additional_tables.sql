@@ -21,6 +21,7 @@ create table user (
     salt           char(4) not null,
     score          int default 0,
     cycle_id       bigint null,
+    group_type     char(1) null,
 
     foreign key(cycle_id) references cycle(id)
 );

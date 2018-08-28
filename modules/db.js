@@ -9,8 +9,7 @@ const knex = require('knex')({
         user: process.env.DB_USER,
         password: process.env.DB_PASSWORD,
         database: process.env.DB
-    },
-    debug: true
+    }
 });
 
 // provide knex connection for all models

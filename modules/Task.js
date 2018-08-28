@@ -28,7 +28,7 @@ class Task
         return 'L';
     }
 
-    static get K() { // king
+    static get Q() { // queen
         return 'K';
     }
 }
