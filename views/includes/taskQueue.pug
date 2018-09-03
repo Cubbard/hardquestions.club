@@ -2,11 +2,9 @@ h2 Tasks
 each tasks, group_type in queues
     .queue(data-type=group_type)
         each task in tasks
-            .task(class= task.is_head ? 'head' : '', data-expires=(task.expires || Date.now()).valueOf() )
+            - const expirDate = new Date(parseInt(task.set_active.valueOf()) + (parseInt(task.expires) * 24 * 60 * 60 * 1000));
+            .task(class= task.is_head ? 'head' : '', data-expires=expirDate.valueOf() )
                 h3= task.title
                 p=  task.descr
                 footer
-                    p
-                        button.push queue
-                        button.pop  remove
                     span #{task.is_head ? new Date(task.expires) : null}

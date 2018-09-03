@@ -27,13 +27,16 @@ router.get('/profile', checkExpiration, (req, res) => {
             'L': [],
             'Q': []
         };
-        if (group_type === 'Q') {
+        let tasks;
+        if (user.group_type === 'Q') {
             tasks = await Queue.query().orderBy('queue_order', 'asc');
-            tasks.forEach(task => {
-                queues[task.group_type].push(task);
-            });
-            delete queues.none;
+        } else {
+            tasks = await Queue.query().where('is_head', '=', 1).orderBy('queue_order', 'asc');
         }
+        tasks.forEach(task => {
+            queues[task.group_type].push(task);
+        });
+            delete queues.none;
         res.render('profile', { identity, score, group_type, cycle, queues });
     });
 });
@@ -48,7 +51,8 @@ router.get('/logout', (req, res) => {
 async function checkExpiration(req, res, next) {
     const heads = await Queue.query().where('is_head', '=', 1);
     heads.forEach(async head => {
-        if (Date.now() > new Date(head.expires)) {
+        const expirDate = new Date(parseInt(head.set_active.valueOf()) + (parseInt(head.expires) * 24 * 60 * 60 * 1000));
+        if (Date.now().valueOf() > expirDate.valueOf()) {
             let old = await Queue.pop(head.group_type);
             Queue.push(old);
         }
