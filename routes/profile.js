@@ -41,9 +41,29 @@ router.get('/profile', checkExpiration, (req, res) => {
     });
 });
 
+router.get('/getTask', async (req, res) => {
+    if (!req.query.group_type)
+        return res.json({error: "You must select a class before getting a task!"});
+    
+    let tasks = await Queue.query().where('group_type', '=', req.query.group_type).andWhere('is_active', '=', 0);
+    if (tasks.length === 0)
+        return res.json({error: "There are no new tasks to assign!"});
+
+    let index = Math.floor(Math.random() * tasks.length);
+    res.json(tasks[Math.floor(Math.random() * tasks.length)]);
+});
+
 router.get('/logout', (req, res) => {
     req.session.destroy( errors => {
         res.redirect('/login');
+    })
+});
+
+router.post('/push', (req, res) => {
+    const task = req.body;
+    task.expires = task.expires || 1;
+    Queue.push(task).then(result => {
+        res.send(result);
     })
 });
 

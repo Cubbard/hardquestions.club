@@ -38,20 +38,6 @@ app.set('view engine', 'pug');
 app.use('/app', requiresAuth, profileRouter);
 app.use(excludesAuth, indexRouter); // ORDER IS IMPORTANT
 
-app.post('/push', (req, res) => {
-    const task = req.body;
-    Queue.push(task).then(result => {
-        res.send(result);
-    })
-});
-
-app.post('/pop', (req, res) => {
-    const type = req.body.group_type;
-    Queue.pop(type).then(result => {
-        res.send(result);
-    })
-});
-
 /* middleware */
 function requiresAuth(req, res, next) {
     if (req.session.userid) {

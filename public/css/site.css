@@ -11,7 +11,9 @@ html, html * {
 }
 
 .task-form-window {
-    max-height: 100px;
+    height: auto;
+    background-color: hsl(0, 0%, 90%);
+    padding: 3px;
 }
 
 .queue-slide {
