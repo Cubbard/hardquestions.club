@@ -2,12 +2,16 @@ html, html * {
     box-sizing: border-box;
 }
 
-.queue-window {
+.queue-window, .task-form-window {
     max-width: 360px;
     width: 100%;
     margin: 0 auto;
     height: 100%;
     overflow: hidden;
+}
+
+.task-form-window {
+    max-height: 100px;
 }
 
 .queue-slide {
