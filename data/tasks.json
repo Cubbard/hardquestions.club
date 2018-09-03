@@ -1,0 +1,36 @@
+{
+    "classes": {
+        "Animal": {
+            "short": "A",
+            "descr": "Assign tasks to this class that involve getting in touch with one's primal side"
+        },
+        "Serf": {
+            "short": "S",
+            "descr": "Assign tasks to this class that involve hard work and productivity"
+        },
+        "Knight": {
+            "short": "K",
+            "descr": "Assign tasks to this class that involve competitivness and rivalry"
+        },
+        "Lord": {
+            "short": "L",
+            "descr": "Assign tasks to this class that involve learning, art, writing, and the finer things"
+        },
+        "King": {
+            "short": "Q",
+            "descr": "Assign tasks to this class that invovle making tough decisions, and ordering the other classes around"
+        }
+    },
+    "tasks": [
+        {
+            "class": "A",
+            "title": "Raw Raw Raw",
+            "descr": "Only eat raw foods. No prep, no cooking."
+        },
+        {
+            "class": "K",
+            "title": "The Art of War",
+            "descr": "Learn how to play Go and fight in one match, online/in person"
+        }
+    ]
+}
