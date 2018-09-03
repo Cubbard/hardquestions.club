@@ -11,6 +11,17 @@ block content
 
 block scripts
     script.
+        const shift = document.getElementById("next");
+        const slide = document.getElementById("slide");
+
+        shift.addEventListener('click', e => {
+            e.preventDefault();
+            let index = parseInt(slide.dataset.index);
+            console.log(index);
+            slide.dataset.index = (index + 1) % 5;
+        });
+
+        // do the loop stuff
         const tasks = document.querySelectorAll('.task.head');
         (function loop() {
                 setTimeout(loop, 1000);
@@ -21,7 +32,7 @@ block scripts
                         mins: Math.round(remaining / 1000 / 60),
                         secs: Math.round(remaining / 1000)
                     }
-                    task.querySelector('footer span').innerHTML = `days: ${date.days}, min: ${date.mins}, secs: ${date.secs}`;
+                    task.querySelector('footer p').innerHTML = `days: ${date.days}, min: ${date.mins}, secs: ${date.secs}`;
                 })
             }
         )();
