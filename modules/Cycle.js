@@ -1,7 +1,6 @@
 require('dotenv').config()
 
 const Model = require('./db.js');
-const User  = require('./User.js');
 
 
 class Cycle extends Model
@@ -12,8 +11,9 @@ class Cycle extends Model
     static get tableName() {
         return 'cycle';
     }
-
+    
     static get relationMappings() {
+        const User  = require('./User.js');
         return {
             participants: {
                 relation: Model.HasManyRelation,

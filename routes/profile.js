@@ -1,3 +1,5 @@
+const CYCLE_LENGTH = 1; // week
+
 const express = require('express');
 const router  = express.Router();
 
@@ -6,10 +8,9 @@ const User  = require('../modules/User.js');
 const Cycle = require('../modules/Cycle.js');
 const Queue = require('../modules/Queue.js');
 
-const currentCycle = Cycle.query().first();
 
 // Maybe shouldn't do it this way... Testing
-router.get('/profile', checkExpiration, (req, res) => {
+router.get('/profile', checkCycle, checkExpiration, (req, res) => {
     User.query().findById(req.session.userid).then(async user => {
         const {identity, score, group_type} = user;
         
@@ -39,6 +40,12 @@ router.get('/profile', checkExpiration, (req, res) => {
             delete queues.none;
         res.render('profile', { identity, score, group_type, cycle, queues });
     });
+});
+
+router.get('/staging', async (req, res) => {
+    currentCycle = await Cycle.query().whereNull('end_date').first().then(cycle => {
+        res.render('profile', {staging: true, cycle});
+    })
 });
 
 router.get('/getTask', async (req, res) => {
@@ -78,6 +85,59 @@ async function checkExpiration(req, res, next) {
         }
     });
     next();
+}
+
+// Cycle expiration
+// date functions
+const now = () => new Date(Date.now());
+const plusDay = date => new Date(date.valueOf() + 24 * 60 * 60 * 1000);
+const plusWeek = date => new Date(date.valueOf() + CYCLE_LENGTH * 7 * 24 * 60 * 60 * 1000);
+
+// lifecycle functions
+const isInProgress = cycle => now().valueOf() < plusWeek(cycle.begin_date).valueOf() && cycle.total_participants >= 2;
+const isInStaging  = cycle => !isInProgress(cycle) && now.valueOf() > plusDay(plusWeek(cycle.begin_date)).valueOf();
+
+function isStaging(cycle) {
+
+}
+
+async function checkCycle(req, res, next) {
+    const currentCycle = await Cycle.query().whereNull('end_date').first();
+    if (isInProgress(currentCycle)) {
+        next();
+    }
+    else {
+        // Have to assume that total_participants will always match total of users
+        // with next_cycle = 1;
+        if (isStaging(currentCycle))
+            return res.redirect('/app/staging');
+        
+        User.query().where('next_cycle', '=', 1).then(async results => {
+            if (results.length >= 2) {
+                await currentCycle.$query().patchAndFetch({end_date: new Date(Date.now()).toLocaleString()});
+    
+                // create new cycle
+    
+                // 1. create new
+                let cycle = {
+                    total_participants: results.length,
+                    score_sum: 0,
+                    begin_date: now().toLocaleString() 
+                }
+                const newCycle = await Cycle.query().insert(cycle);
+                results.forEach(async user => {
+                    await user.$query().patch({current_cycle: newCycle.id, next_cycle: 0});
+                })
+
+                Queue.query().patch({is_active: 0}).then(result => {
+                    next();
+                })
+            }
+            else {
+                res.redirect('/app/staging');
+            }
+        });
+    }
 }
 
 
