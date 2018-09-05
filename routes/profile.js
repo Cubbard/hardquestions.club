@@ -8,13 +8,20 @@ const User  = require('../modules/User.js');
 const Cycle = require('../modules/Cycle.js');
 const Queue = require('../modules/Queue.js');
 
+/* unfortunate globals I'm using for state? */
+let staging = true; // wait to begin next cycle?
 
 // Maybe shouldn't do it this way... Testing
 router.get('/profile', checkCycle, checkExpiration, (req, res) => {
     User.query().findById(req.session.userid).then(async user => {
-        const {identity, score, group_type} = user;
+        let {identity, score, group_type} = user, cycle;
         
-        const cycle = await user.$relatedQuery('cycle');
+        if (staging) {
+            cycle =  await Cycle.query().whereNull('end_date').first();
+            return res.render('profile', { staging, identity, cycle });
+        }
+
+        cycle = await user.$relatedQuery('cycle');
         if (!cycle) {
             res.render('profile', { identity });
             return;
@@ -40,12 +47,6 @@ router.get('/profile', checkCycle, checkExpiration, (req, res) => {
             delete queues.none;
         res.render('profile', { identity, score, group_type, cycle, queues });
     });
-});
-
-router.get('/staging', async (req, res) => {
-    currentCycle = await Cycle.query().whereNull('end_date').first().then(cycle => {
-        res.render('profile', {staging: true, cycle});
-    })
 });
 
 router.get('/getTask', async (req, res) => {
@@ -88,51 +89,42 @@ async function checkExpiration(req, res, next) {
 }
 
 // Cycle expiration
-// date functions
 const now = () => new Date(Date.now());
 const plusWeek = date => new Date(date.valueOf() + CYCLE_LENGTH * 7 * 24 * 60 * 60 * 1000);
-
-// lifecycle functions
-const isInProgress = cycle => now().valueOf() < plusWeek(cycle.begin_date).valueOf() && cycle.total_participants >= 2;
-
-function isStaging(cycle) {
-
-}
+const isInProgress = cycle => cycle.begin_date ? now().valueOf() < plusWeek(cycle.begin_date).valueOf() : false;
 
 async function checkCycle(req, res, next) {
-    const currentCycle = await Cycle.query().whereNull('end_date').first();
+    staging = true;
+
+    let currentCycle = await Cycle.query().whereNull('end_date').first();
     if (isInProgress(currentCycle)) {
+        staging = false;
         next();
     }
     else {
-        await currentCycle.$query().patch({end_date: now().toLocaleString()});
-        // create new cycle
-
-        // 1. create new
-        let params = {
-            total_participants: 0,
-            score_sum: 0,
-            begin_date: now().toLocaleString() 
+        if (currentCycle.begin_date) { // need to create new
+            await currentCycle.$query().patch({end_date: now().toLocaleString()});
+            
+            let params = {
+                total_participants: 0,
+                score_sum: 0
+            }
+            currentCycle = await Cycle.query().insert(params);
         }
-        const newCycle = await Cycle.query().insert(params);
-
-        User.query().where('next_cycle', '=', 1).then(async users => {
-            newCycle.$query().patchAndFetch({total_participants: users.length}).then(cycle => {
-                if (users.length >= 2) {
         
-                    users.forEach(async user => {
-                        await user.$query().patch({cycle_id: cycle.id, next_cycle: 0});
-                    })
-    
-                    Queue.query().patch({is_active: 0}).then(result => {
-                        next();
-                    })
-                }
-                else {
-                    res.redirect('/app/staging');
-                }
+        const users = await User.query().where('next_cycle', '=', 1);
+        await currentCycle.$query().patch({total_participants: users.length});
+        if (users.length >= 2) {
+            staging = false;
+            await currentCycle.$query().patch({begin_date: now().toLocaleString()});
+            users.forEach(async user => {
+                await user.$query().patch({cycle_id: currentCycle.id, next_cycle: 0});
             })
-        });
+            
+            await Queue.query().patch({is_active: 0});
+            return next();
+        }
+        next();
     }
 }
 

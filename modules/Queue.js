@@ -30,7 +30,7 @@ class Queue extends Model
             .andWhere('queue_order', '=', await Queue.tail()).first();
         let newTail, is_head = oldTail ? 0 : 1;
         if (task.id && task.id !== "")
-            newTail = await Queue.query().patchAndFetchById(task.id, {is_head, is_active: 1});
+            newTail = await Queue.query().patchAndFetch({is_head, is_active: 1, set_active: new Date(Date.now()).toLocaleString()});
         else {
             task.is_head = is_head;
             task.set_active = new Date(Date.now()).toLocaleString(); 
