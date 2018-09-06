@@ -70,6 +70,9 @@ router.get('/logout', (req, res) => {
 router.post('/push', (req, res) => {
     const task = req.body;
     task.expires = task.expires || 1;
+    
+    if (task.id === "") delete task.id;
+    
     Queue.push(task).then(result => {
         res.send(result);
     })

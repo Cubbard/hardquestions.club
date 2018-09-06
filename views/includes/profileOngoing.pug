@@ -6,8 +6,8 @@ include ./taskQueue.pug
 block scripts
     if king
         script.
-            const getTask  = document.getElementById('getTask');
-            const taskForm = document.getElementById('taskForm');
+            let getTask  = document.getElementById('getTask');
+            let taskForm = document.getElementById('taskForm');
 
             getTask.addEventListener('click', e => {
                 e.preventDefault();
@@ -17,11 +17,7 @@ block scripts
                     if (dat.error) {
                         alert(dat.error);
                     } else {
-                        const id = document.createElement('input');
-                        id.type = "hidden";
-                        id.name = "id";
-                        taskForm.appendChild(id);
-
+                        const id = document.querySelector('input[name="id"]');
                         const title = taskForm.querySelector('input[name="title"]');
                         const descr = taskForm.querySelector('textarea[name="descr"]');
                         const group_type = taskForm.querySelector('select[name="group_type"]');
@@ -30,9 +26,9 @@ block scripts
                         title.value = dat.title;
                         descr.value = dat.descr;
 
-                        title.disabled = "disabled";
-                        descr.disabled = "disabled";
-                        group_type.disabled = "disabled";
+                        title.readOnly = true;
+                        descr.readOnly = true;
+                        group_type.readOnly = true;
                     }
 
                 })

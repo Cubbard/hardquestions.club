@@ -2,6 +2,7 @@
     h2 Add tasks
     a(href="#")#getTask get task
     form#taskForm(action="/app/push", method="POST")
+        input(type="hidden", name="id")
         label(for="group_type") Class:&nbsp
         select(name="group_type")
             option(value="", default) 
