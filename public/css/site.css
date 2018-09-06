@@ -2,21 +2,55 @@ html, html * {
     box-sizing: border-box;
 }
 
-.queue {
-    min-height: 2em;
+.queue-window, .task-form-window {
+    max-width: 360px;
+    width: 100%;
+    margin: 0 auto;
+    height: 100%;
+    overflow: hidden;
+}
+
+.task-form-window {
+    height: auto;
+    background-color: hsl(0, 0%, 90%);
     padding: 3px;
+}
+
+.queue-slide {
+    width: 1800px;
+    transition: margin-left 0.3s linear;
+}
+
+.queue-slide[data-index="0"] {
+    margin-left: 0;
+}
+
+.queue-slide[data-index="1"] {
+    margin-left: -360px;
+}
+
+.queue-slide[data-index="2"] {
+    margin-left: -720px;
+}
+
+.queue-slide[data-index="3"] {
+    margin-left: -1080px;
+}
+
+.queue-slide[data-index="4"] {
+    margin-left: -1440px;
+}
+
+.queue {
+    display: inline-block;
+    width: 360px;
+    min-height: 2em;
     color: white;
-    margin-bottom: 16px;
 }
 
 .queue .task {
-    border: 1px solid white;
+    border-bottom: 3px solid white;
     padding: 3px;
-    margin-bottom: 8px;
-}
-
-.queue .task:last-of-type {
-    margin-bottom: 0;
 }
 
 .queue[data-type='A'] {
