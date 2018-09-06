@@ -18,7 +18,6 @@ class Queue extends Model
 
     static async tail(group_type) {
         let tasks = await this.whereActive(group_type);
-
         if (tasks.length === 0)
             return null;
 

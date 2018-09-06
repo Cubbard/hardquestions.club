@@ -94,7 +94,9 @@ async function checkExpiration(req, res, next) {
 // Cycle expiration
 const now = () => new Date(Date.now());
 const plusWeek = date => new Date(date.valueOf() + CYCLE_LENGTH * 7 * 24 * 60 * 60 * 1000);
+const plusDay = date => new Date(date.valueOf() + 24 * 60 * 60 * 1000);
 const isInProgress = cycle => cycle.begin_date ? now().valueOf() < plusWeek(cycle.begin_date).valueOf() : false;
+const isInStaging = cycle => now().valueOf() < new Date(cycle.begin_after).valueOf();
 
 async function checkCycle(req, res, next) {
     staging = true;
@@ -107,16 +109,21 @@ async function checkCycle(req, res, next) {
     else {
         if (currentCycle.begin_date) { // need to create new
             await currentCycle.$query().patch({end_date: now().toLocaleString()});
-            
             let params = {
                 total_participants: 0,
-                score_sum: 0
+                score_sum: 0,
+                begin_after: plusDay(new Date(currentCycle.end_date)).toLocaleString()
             }
             currentCycle = await Cycle.query().insert(params);
         }
         
         const users = await User.query().where('next_cycle', '=', 1);
         await currentCycle.$query().patch({total_participants: users.length});
+
+        if (isInStaging(currentCycle)) {
+            return next();
+        }
+
         if (users.length >= 2) {
             staging = false;
             await currentCycle.$query().patch({begin_date: now().toLocaleString()});
