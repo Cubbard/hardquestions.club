@@ -3,9 +3,9 @@ extends templates/master.pug
 block content
     h1 Welcome!
     - const king = group_type === 'Q';
-    .user #{identity + ' - ' + (!isNaN(score) ? score : "Not a part of the current cycle")}
-        p
-            a(href="/app/logout") logout
+    .user
+        p #{identity + ' - ' + (!isNaN(score) ? score : "Not a part of the current cycle")}
+
     if !staging
         include includes/profileOngoing.pug
     else

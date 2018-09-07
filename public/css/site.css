@@ -1,23 +1,56 @@
 html, html * {
     box-sizing: border-box;
+    font-size: 16px;
+    font-family: sans-serif;
+}
+
+html, body {
+    height: 100%;
+}
+
+body {
+    margin: 0;
+}
+
+/* form stuff */
+input, textarea {
+    -webkit-appearance: none;
+    border: none;
+    border: 1px solid hsl(0, 0%, 10%);
+    border-radius: 3px;
+    padding: 0;
+    margin: 0;
+    line-height: 1.5em;
+    display: inline-block;
+}
+
+input[type="text"], input[type="password"], textarea {
+    width: 100%;
+}
+
+input[type="submit"] {
+    padding: 0.25em 0.3em;
+    background-color: hsl(0, 0%, 85%);
+}
+
+.field {
+    display: block;
+    margin-bottom: 0.5em;
 }
 
 .queue-window, .task-form-window {
-    max-width: 360px;
     width: 100%;
-    margin: 0 auto;
-    height: 100%;
-    overflow: hidden;
+    min-height: 300px;
+    overflow-x: hidden;
 }
 
 .task-form-window {
-    height: auto;
     background-color: hsl(0, 0%, 90%);
-    padding: 3px;
+    padding: 0 0.5em;
 }
 
 .queue-slide {
-    width: 1800px;
+    width: calc((320px - 1.8em) * 5);
     transition: margin-left 0.3s linear;
 }
 
@@ -26,25 +59,26 @@ html, html * {
 }
 
 .queue-slide[data-index="1"] {
-    margin-left: -360px;
+    margin-left: calc((320px - 2em) * -1);
 }
 
 .queue-slide[data-index="2"] {
-    margin-left: -720px;
+    margin-left: calc((320px - 2em) * -2);
 }
 
 .queue-slide[data-index="3"] {
-    margin-left: -1080px;
+    margin-left: calc((320px - 2em) * -3);
 }
 
 .queue-slide[data-index="4"] {
-    margin-left: -1440px;
+    margin-left: calc((320px - 2em) * -4);
 }
 
 .queue {
     display: inline-block;
-    width: 360px;
+    vertical-align: top;
     min-height: 2em;
+    width: calc(320px - 2em);
     color: white;
 }
 
@@ -71,4 +105,55 @@ html, html * {
 
 .queue[data-type='Q'] {
     background-color: purple;
+}
+
+nav {
+    width: 100%;
+    padding: 0 0.5em;
+    background-color: hsl(0, 0%, 10%);
+}
+
+nav ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+nav ul li {
+    display: inline-block;
+    line-height: 1.5em;
+    margin-right: 1.3em;
+    cursor: pointer;
+}
+
+nav ul li:last-of-type {
+    margin-right: 0;
+}
+
+nav ul li a {
+    text-decoration: none;
+    color: hsl(0, 0%, 95%);
+    vertical-align: middle;
+}
+
+.content-wrapper {
+    width: 100%;
+    height: 100%;
+    padding: 0 1em;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.content {
+    height: 100%;
+    width: calc(320px - 2em);
+    padding-bottom: 1.5em;
+    background-color: white;
+}
+
+/* dummies */
+.viewable {
+    height: 300px;
+    background-color: hsl(0, 0%, 85%);
 }

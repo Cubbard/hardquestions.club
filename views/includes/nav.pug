@@ -1,4 +1,8 @@
 nav
     ul
         li #[a(href="/") Home]
-        li #[a(href="/login") Login]
+
+        if !identity
+            li #[a(href="/login") Login]
+        else
+            li #[a(href="/app/logout") Logout]

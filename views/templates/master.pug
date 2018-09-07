@@ -6,6 +6,9 @@ head
     link(rel="stylesheet", href="/public/css/site.css")
 
 body
-    block content
+    .content-wrapper
+        .content
+            include ../includes/nav.pug
+            block content
 
     block scripts

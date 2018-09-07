@@ -1,21 +1,22 @@
 .task-form-window
     h2 Add tasks
-    a(href="#")#getTask get task
+    p
+        a(href="#")#getTask get task
     form#taskForm(action="/app/push", method="POST")
         input(type="hidden", name="id")
-        label(for="group_type") Class:&nbsp
-        select(name="group_type")
-            option(value="", default) 
-            option(value="A") Animal
-            option(value="S") Serf
-            option(value="K") Knight
-            option(value="L") Lord
-            option(value="Q") King
-        br
-        label(for="title") Title:&nbsp
-        input(type="text", name="title")
-        br
-        label(for="descr") Description:&nbsp
-        textarea(name="descr", cols="30", rows="10")
-        br
+        .field
+            label(for="group_type") Class:&nbsp
+            select(name="group_type")
+                option(value="", default) 
+                option(value="A") Animal
+                option(value="S") Serf
+                option(value="K") Knight
+                option(value="L") Lord
+                option(value="Q") King
+        .field
+            label(for="title") Title:&nbsp
+            input(type="text", name="title")
+        .field
+            label(for="descr") Description:&nbsp
+            textarea(name="descr", cols="30", rows="10")
         input(type="submit", value="submit")

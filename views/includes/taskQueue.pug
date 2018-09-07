@@ -1,7 +1,8 @@
 .queue-window
     h2 Tasks
     .queue-controls
-        a#next.queue-shift next
+        p
+            a(href="#")#next.queue-shift next
     #slide.queue-slide(data-index=0)
         each tasks, group_type in queues
             .queue(data-type=group_type)
