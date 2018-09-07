@@ -28,6 +28,21 @@
             "descr": "Only eat raw foods. No prep, no cooking."
         },
         {
+            "class": "A",
+            "title": "Sounds of Nature",
+            "descr": "Do your best chimp impression before bed tonight."
+        },
+        {
+            "class": "A",
+            "title": "Sounds of Nature",
+            "descr": "Bark like a dog before breakfast this morning."
+        },
+        {
+            "class": "L",
+            "title": "Gentleman & a Scholar",
+            "descr": "Drink one glass of red wine. Read at least 10 pages of any book you choose."
+        },
+        {
             "class": "K",
             "title": "The Art of War",
             "descr": "Learn how to play Go and fight in one match, online/in person"
