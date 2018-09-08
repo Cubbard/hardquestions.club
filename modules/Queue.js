@@ -18,7 +18,6 @@ class Queue extends Model
 
     static async tail(group_type) {
         let tasks = await this.whereActive(group_type);
-
         if (tasks.length === 0)
             return null;
 
@@ -50,6 +49,7 @@ class Queue extends Model
             newTail = await Queue.query().patchAndFetchById(task.id, {is_head: isHead, is_active: 1, set_active: new Date(Date.now()).toLocaleString()});
         } else {
             task.is_head = isHead ? 1 : 0;
+            task.is_active = 1;
             task.set_active = new Date(Date.now()).toLocaleString();
             newTail = await Queue.query().insert(task);
         }

@@ -1,13 +1,14 @@
 extends templates/master.pug
 
 block content
-    include includes/nav.pug
-    
+    h1 Login
     form(action="/login", method="POST")
-        label(for="name") Identity
-        input(type="text", name="identity")
+        .field
+            label(for="name") Identity
+            input(type="text", name="identity")
         
-        label(for="password") Password
-        input(type="password", name="password")
+        .field
+            label(for="password") Password
+            input(type="password", name="password")
 
         input(type="submit", value="submit")

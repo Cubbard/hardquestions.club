@@ -1,21 +1,27 @@
-.task-form-window
-    h2 Add tasks
+h2 Add tasks
+p
     a(href="#")#getTask get task
+    span(style="display: inline-block; width: 1em;")
+    a(href="#")#createTask create task
+.well
     form#taskForm(action="/app/push", method="POST")
         input(type="hidden", name="id")
-        label(for="group_type") Class:&nbsp
-        select(name="group_type")
-            option(value="", default) 
-            option(value="A") Animal
-            option(value="S") Serf
-            option(value="K") Knight
-            option(value="L") Lord
-            option(value="Q") King
-        br
-        label(for="title") Title:&nbsp
-        input(type="text", name="title")
-        br
-        label(for="descr") Description:&nbsp
-        textarea(name="descr", cols="30", rows="10")
-        br
+        .field
+            label(for="group_type") Class:&nbsp
+            select(name="group_type")
+                option(value="", default) 
+                option(value="A") Animal
+                option(value="S") Serf
+                option(value="K") Knight
+                option(value="L") Lord
+                option(value="Q") King
+        .field
+            label(for="title") Title:&nbsp
+            input(type="text", name="title")
+        .field
+            label(for="descr") Description:&nbsp
+            textarea(style="resize: none;", name="descr", rows="5")
+        .field
+            label(for="points") Points:&nbsp
+            input(type="text", maxlength="1", name="points")
         input(type="submit", value="submit")
