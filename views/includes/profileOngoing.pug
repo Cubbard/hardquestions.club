@@ -1,64 +1,81 @@
+- const king = user.group_type === 'Q';
 if king
     include ./taskForm.pug
 
 include ./taskQueue.pug
 
-block scripts
-    if king
-        script.
-            let getTask  = document.getElementById('getTask');
-            let taskForm = document.getElementById('taskForm');
+script.
+    const shift = document.getElementById("next");
+    const slide = document.getElementById("slide");
 
-            getTask.addEventListener('click', e => {
-                e.preventDefault();
-                let xhr = new XMLHttpRequest();
-                xhr.addEventListener('load', function() {
-                    let dat = JSON.parse(this.responseText);
-                    if (dat.error) {
-                        alert(dat.error);
-                    } else {
-                        const id = document.querySelector('input[name="id"]');
-                        const title = taskForm.querySelector('input[name="title"]');
-                        const descr = taskForm.querySelector('textarea[name="descr"]');
-                        const group_type = taskForm.querySelector('select[name="group_type"]');
+    shift.addEventListener('click', e => {
+        e.preventDefault();
+        let index = parseInt(slide.dataset.index);
+        slide.dataset.index = (index + 1) % 5;
+    });
 
-                        id.value    = dat.id;
-                        title.value = dat.title;
-                        descr.value = dat.descr;
-
-                        title.readOnly = true;
-                        descr.readOnly = true;
-                        group_type.readOnly = true;
-                    }
-
-                })
-
-                xhr.open("GET", "/app/getTask?group_type=" + taskForm.querySelector('select[name="group_type"]').value);
-                xhr.send();
+    // do the loop stuff
+    const tasks = document.querySelectorAll('.task.head');
+    (function loop() {
+            setTimeout(loop, 1000);
+            tasks.forEach(task => {
+                const remaining = parseInt(task.dataset.expires) - Date.now().valueOf();
+                const date = {
+                    days: Math.round(remaining / 1000 / 60 / 60 / 24),
+                    mins: Math.round(remaining / 1000 / 60),
+                    secs: Math.round(remaining / 1000)
+                }
+                task.querySelector('footer small').innerHTML = `days: ${date.days}, min: ${date.mins}, secs: ${date.secs}`;
             })
-    script.
-        const shift = document.getElementById("next");
-        const slide = document.getElementById("slide");
+        }
+    )();
 
-        shift.addEventListener('click', e => {
+    // King related JS
+    if (!{user.group_type === 'Q'}) {
+        let getTask  = document.getElementById('getTask');
+        let createTask = document.getElementById('createTask');
+        let taskForm = document.getElementById('taskForm');
+
+        const id         = document.querySelector('input[name="id"]');
+        const title      = taskForm.querySelector('input[name="title"]');
+        const descr      = taskForm.querySelector('textarea[name="descr"]');
+        const points     = taskForm.querySelector('input[name="points"]');
+        const group_type = taskForm.querySelector('select[name="group_type"]');
+
+        createTask.addEventListener('click', e => {
             e.preventDefault();
-            let index = parseInt(slide.dataset.index);
-            console.log(index);
-            slide.dataset.index = (index + 1) % 5;
-        });
+            id.value = "";
+            title.value = "";
+            descr.value = "";
+            points.value = "";
 
-        // do the loop stuff
-        const tasks = document.querySelectorAll('.task.head');
-        (function loop() {
-                setTimeout(loop, 1000);
-                tasks.forEach(task => {
-                    const remaining = parseInt(task.dataset.expires) - Date.now().valueOf();
-                    const date = {
-                        days: Math.round(remaining / 1000 / 60 / 60 / 24),
-                        mins: Math.round(remaining / 1000 / 60),
-                        secs: Math.round(remaining / 1000)
-                    }
-                    task.querySelector('footer p').innerHTML = `days: ${date.days}, min: ${date.mins}, secs: ${date.secs}`;
-                })
-            }
-        )();
+            title.readOnly = false;
+            descr.readOnly = false;
+            group_type.readOnly = false;
+        });
+        getTask.addEventListener('click', e => {
+            e.preventDefault();
+            let xhr = new XMLHttpRequest();
+            xhr.addEventListener('load', function() {
+                let dat = JSON.parse(this.responseText);
+                if (dat.error) {
+                    alert(dat.error);
+                } else {
+
+                    id.value    = dat.id;
+                    title.value = dat.title;
+                    descr.value = dat.descr;
+                    points.value = dat.points;
+
+                    title.readOnly = true;
+                    descr.readOnly = true;
+                    group_type.readOnly = true;
+                    points.readOnly = true;
+                }
+
+            })
+
+            xhr.open("GET", "/app/getTask?group_type=" + taskForm.querySelector('select[name="group_type"]').value);
+            xhr.send();
+        })
+    }

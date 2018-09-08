@@ -1,8 +1,12 @@
 nav
-    ul
-        li #[a(href="/") Home]
+    .content-wrapper
+        .content
+            ul
+                li #[a(href="/") Home]
 
-        if !identity
-            li #[a(href="/login") Login]
-        else
-            li #[a(href="/app/logout") Logout]
+                if !loggedIn
+                    li #[a(href="/login") Login]
+                else
+                    li #[a(href="/app/logout") Logout]
+
+                li #[a(href="/faq") Faq]

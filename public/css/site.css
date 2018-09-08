@@ -1,14 +1,19 @@
 html, html * {
     box-sizing: border-box;
-    font-size: 16px;
     font-family: sans-serif;
+    font-weight: 400;
 }
 
 html, body {
     height: 100%;
 }
 
+html {
+    font-size: 1em;
+}
+
 body {
+    line-height: 1.45em;
     margin: 0;
 }
 
@@ -21,11 +26,17 @@ input, textarea {
     padding: 0;
     margin: 0;
     line-height: 1.5em;
+    font-size: 1em;
     display: inline-block;
 }
 
 input[type="text"], input[type="password"], textarea {
+    padding-left: 0.25em;
     width: 100%;
+}
+
+input:read-only, textarea:read-only {
+    color: hsl(0, 0%, 60%);
 }
 
 input[type="submit"] {
@@ -38,15 +49,116 @@ input[type="submit"] {
     margin-bottom: 0.5em;
 }
 
-.queue-window, .task-form-window {
+nav {
     width: 100%;
-    min-height: 300px;
-    overflow-x: hidden;
+    background-color: hsl(0, 0%, 10%);
 }
 
-.task-form-window {
-    background-color: hsl(0, 0%, 90%);
-    padding: 0 0.5em;
+nav ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+nav ul li {
+    display: inline-block;
+    line-height: 2.5em;
+    margin-right: 1.3em;
+    cursor: pointer;
+}
+
+nav ul li:last-of-type {
+    margin-right: 0;
+}
+
+nav ul li a {
+    text-decoration: none;
+    color: hsl(0, 0%, 95%);
+    vertical-align: middle;
+}
+
+/* tables */
+
+table tr, table td {
+    border-bottom: 1px solid hsl(0, 0%, 60%);
+}
+
+table {
+    border-collapse: collapse;
+    text-align: left;
+    width: 100%;
+}
+
+thead {
+    text-align: left;
+    background-color: hsl(0, 0%, 15%);
+    color: hsl(0, 0%, 95%);
+}
+
+thead tr th, tbody tr td {
+    padding: 0.5em;
+}
+
+/* typo
+ * https://type-scale.com/
+ */
+
+.red {
+    color: #ff637a;
+}
+
+b {
+    font-weight: 600;
+}
+
+p {margin-bottom: 1.3em;}
+
+h1, h2, h3, h4 {
+  margin: 1.414em 0 0.5em;
+  font-weight: inherit;
+  line-height: 1.2;
+}
+
+h1 {
+  margin-top: 0;
+  font-size: 2.441em;
+}
+
+h2 {font-size: 1.953em;}
+
+h3 {font-size: 1.563em;}
+
+h4 {font-size: 1.25em;}
+
+small, .font_small {font-size: 0.8em;}
+
+.content-wrapper {
+    width: 100%;
+    height: 100%;
+    padding: 0 1em;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.content {
+    height: 100%;
+    width: 100%;
+    max-width: 600px;
+    min-width: calc(320px - 2em);
+}
+
+.well {
+    border-radius: 3px;
+    border: 1px solid hsl(0, 0%, 70%);
+    background-color: hsl(0, 0%, 95%);
+    padding: 0.33em;
+}
+
+.queue-window {
+    width: calc(320px - 2em);
+    min-height: 300px;
+    overflow-x: hidden;
 }
 
 .queue-slide {
@@ -75,82 +187,86 @@ input[type="submit"] {
 }
 
 .queue {
+    padding: 3px;
     display: inline-block;
     vertical-align: top;
     min-height: 2em;
     width: calc(320px - 2em);
-    color: white;
 }
 
 .queue .task {
-    border-bottom: 3px solid white;
-    padding: 3px;
+    border-bottom: 1px solid hsl(0, 0%, 80%);
+    border-radius: 3px;
+    margin-bottom: 1em;
 }
 
-.queue[data-type='A'] {
-    background-color: green;
+.queue .topper {
+    border-radius: 5px;
+    height: 0.75em;
+    margin-bottom: 1em;
 }
 
-.queue[data-type='S'] {
-    background-color: yellow;
+.queue[data-type='A'] .topper {
+    background-color: #90ff7a;
 }
 
-.queue[data-type='K'] {
-    background-color: red;
+.queue[data-type='S'] .topper {
+    background-color: #ffd263;
 }
 
-.queue[data-type='L'] {
-    background-color: pink;
+.queue[data-type='K'] .topper {
+    background-color: #ff6070;
 }
 
-.queue[data-type='Q'] {
-    background-color: purple;
+.queue[data-type='L'] .topper {
+    background-color: #ffadd3;
 }
 
-nav {
-    width: 100%;
-    padding: 0 0.5em;
-    background-color: hsl(0, 0%, 10%);
+.queue[data-type='Q'] .topper {
+    background-color: #b960db;
 }
 
-nav ul {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-}
-
-nav ul li {
+.animal-badge:after {
+    content: " ";
     display: inline-block;
-    line-height: 1.5em;
-    margin-right: 1.3em;
-    cursor: pointer;
+    margin-left: 0.25em;
+    width: 1em;
+    height: 1em;
+    background-color: #90ff7a;
+}
+.serf-badge:after {
+    content: " ";
+    display: inline-block;
+    margin-left: 0.25em;
+    width: 1em;
+    height: 1em;
+    background-color: #ffd263;
+}
+.knight-badge:after {
+    content: " ";
+    display: inline-block;
+    margin-left: 0.25em;
+    width: 1em;
+    height: 1em;
+    background-color: #ff6070;
+}
+.lord-badge:after {
+    content: " ";
+    display: inline-block;
+    margin-left: 0.25em;
+    width: 1em;
+    height: 1em;
+    background-color: #ffadd3;
+}
+.king-badge:after {
+    content: " ";
+    display: inline-block;
+    margin-left: 0.25em;
+    width: 1em;
+    height: 1em;
+    background-color: #b960db;
 }
 
-nav ul li:last-of-type {
-    margin-right: 0;
-}
-
-nav ul li a {
-    text-decoration: none;
-    color: hsl(0, 0%, 95%);
-    vertical-align: middle;
-}
-
-.content-wrapper {
-    width: 100%;
-    height: 100%;
-    padding: 0 1em;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-}
-
-.content {
-    height: 100%;
-    width: calc(320px - 2em);
-    padding-bottom: 1.5em;
-    background-color: white;
-}
 
 /* dummies */
 .viewable {

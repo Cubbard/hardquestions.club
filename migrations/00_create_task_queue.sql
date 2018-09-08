@@ -14,5 +14,6 @@ create table task_queue (
     is_active   int(1) not null default 0,
     queue_order bigint not null default 0,
     set_active  datetime null,
-    expires     bigint not null
+    expires     bigint not null,
+    points      int not null default 1
 );

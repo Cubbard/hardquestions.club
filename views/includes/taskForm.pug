@@ -1,7 +1,9 @@
-.task-form-window
-    h2 Add tasks
-    p
-        a(href="#")#getTask get task
+h2 Add tasks
+p
+    a(href="#")#getTask get task
+    span(style="display: inline-block; width: 1em;")
+    a(href="#")#createTask create task
+.well
     form#taskForm(action="/app/push", method="POST")
         input(type="hidden", name="id")
         .field
@@ -18,5 +20,8 @@
             input(type="text", name="title")
         .field
             label(for="descr") Description:&nbsp
-            textarea(name="descr", cols="30", rows="10")
+            textarea(style="resize: none;", name="descr", rows="5")
+        .field
+            label(for="points") Points:&nbsp
+            input(type="text", maxlength="1", name="points")
         input(type="submit", value="submit")

@@ -8,14 +8,14 @@ const Crypto = require('../modules/Crypto.js');
 const User   = require('../modules/User.js');
 
 
-router.get('/', (req, res) => {
+router.get('/', excludesAuth, (req, res) => {
     res.render('index', { page: 'Home' });
 });
 
 router.route('/login')
-    .get((req, res) => {
+    .get(excludesAuth, (req, res) => {
         res.render('login', { page: 'Login' });
-    }).post((req, res) => {
+    }).post(excludesAuth, (req, res) => {
         Crypto.tryUser(req.body.identity, req.body.password).then( user => {
             if (user) {
                 req.session.userid = user.id;
@@ -26,5 +26,13 @@ router.route('/login')
         });
     });
 
+
+function excludesAuth(req, res, next) {
+    if (req.session.userid) {
+        res.redirect('/app/profile');
+    } else {
+        next();
+    }
+}
 
 module.exports = router;

@@ -1,1 +1,9 @@
-h2 We don't have enough participants yet! #[small #{cycle.total_participants} so far]
+h3.red The next round will begin after #[b "#{cycle.begin_after}"] when there are at least two participants #[small (#{cycle.total_participants} so far)]
+
+.well
+    if !user.next_cycle
+        form(action="/app/optin/" + user.id, method="POST")
+            input(type="hidden", name="hide", value="foo")
+            input(type="submit", value="Participate")
+    else
+        p You are participating in the next cycle
