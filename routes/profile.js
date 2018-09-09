@@ -92,8 +92,8 @@ router.post('/push', (req, res) => {
 async function checkExpiration(req, res, next) {
     const heads = await Queue.query().where('is_head', '=', 1).andWhere('is_active', '=', 1);
     heads.forEach(async head => {
-        const expirDate = new Date(parseInt(head.set_active.valueOf()) + (parseInt(head.expires) * 24 * 60 * 60 * 1000));
-        if (Date.now().valueOf() > expirDate.valueOf()) {
+        const expirDate = head.set_active + (head.expires * 24 * 60 * 60 * 1000);
+        if (Date.now().valueOf() > expirDate) {
             let users = await User.activeUsers(head.group_type);
             users.forEach(async user => {
                 let daily = head.points * (user.daily_proof ? 1 : -1);
@@ -108,11 +108,11 @@ async function checkExpiration(req, res, next) {
 }
 
 // Cycle expiration
-const now = () => new Date(Date.now());
-const plusWeek = date => new Date(date.valueOf() + CYCLE_LENGTH * 7 * 24 * 60 * 60 * 1000);
-const plusDay = date => new Date(date.valueOf() + 24 * 60 * 60 * 1000);
-const isInProgress = cycle => cycle.begin_date ? now().valueOf() < plusWeek(cycle.begin_date).valueOf() : false;
-const isInStaging = cycle => now().valueOf() < new Date(cycle.begin_after).valueOf();
+const now = () => Date.now();
+const plusWeek = date => date + (CYCLE_LENGTH * 7 * 24 * 60 * 60 * 1000);
+const plusDay = date => date + (24 * 60 * 60 * 1000);
+const isInProgress = cycle => cycle && cycle.begin_date ? now() < plusWeek(cycle.begin_date) : false;
+const isInStaging = cycle => now() < cycle.begin_after;
 
 const hasParticipants = async function(cycle) {
     const users = await cycle.$relatedQuery('participants');
@@ -129,15 +129,15 @@ async function checkCycle(req, res, next) {
     }
     else {
         await Queue.query().patch({is_active: 0});
-        await User.query().where('cycle_id', '=', currentCycle.id).increment('total_cycles', 1);
-
-        if (currentCycle.begin_date) { // need to create new
-            await currentCycle.$query().patch({end_date: now().toLocaleString()});
-
+        
+        if (!currentCycle || currentCycle.begin_date) { // need to create new
+            if (currentCycle)
+                await currentCycle.$query().patch({end_date: now()});
+            
             let params = {
                 total_participants: 0,
                 score_sum: 0,
-                begin_after: plusDay(new Date(currentCycle.end_date)).toLocaleString()
+                begin_after: plusDay(currentCycle ? currentCycle.end_date : now())
             }
             currentCycle = await Cycle.query().insert(params);
         }
@@ -151,7 +151,7 @@ async function checkCycle(req, res, next) {
 
         if (users.length >= 2) {
             req.staging = false;
-            await currentCycle.$query().patch({begin_date: now().toLocaleString()});
+            await currentCycle.$query().patch({begin_date: now()});
 
             // assign user classes
             let unassigned = ['A', 'S', 'K', 'L'], updated = [];
@@ -173,7 +173,7 @@ async function checkCycle(req, res, next) {
             }
 
             updated.forEach(async user => {
-                await user.$query().patch({cycle_id: currentCycle.id, next_cycle: 0, score: 0, group_type: user.group_type});
+                await user.$query().patch({cycle_id: currentCycle.id, next_cycle: 0, score: 0, group_type: user.group_type, total_cycles: (user.total_cycles + 1)});
             })
 
             return next();

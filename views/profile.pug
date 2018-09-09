@@ -1,36 +1,38 @@
 extends templates/master.pug
 block content
     - const classes = {'A': 'Animal', 'S': 'Serf', 'K': 'Knight', 'L': 'Lord', 'Q': 'King'};
-    h1 !{`${user.identity} - ${classes[user.group_type]}`}
+    h1 !{`${user.identity} - ${classes[user.group_type] || '(class not assigned)'}`}
     p !{`score: ${user.score}, total score: ${user.total_score}, total rounds: ${user.total_cycles}`}
-    .well
-        if !user.daily_proof
-            form(action="/app/proof/" + user.id, method="POST")
-                input(type="hidden", name="hide", value="foo")
-                input(type="submit", value="submit proof")
-        else
-            p You have submitted your daily proof
+    if !staging
+        .well
+            if !user.daily_proof
+                form(action="/app/proof/" + user.id, method="POST")
+                    input(type="hidden", name="hide", value="foo")
+                    input(type="submit", value="submit proof")
+            else
+                p You have submitted your daily proof
     hr
     h2 Participants
-    table.users
-        thead
-            tr
-                th identity
-                th score
-                th total score
-                th total rounds
-                th class
-                th daily proof?
-        tbody
-            each participant in participants
+    .table-container
+        table.users
+            thead
                 tr
-                    td= participant.identity
-                    td= participant.score
-                    td= participant.total_score
-                    td= participant.total_cycles
-                    td= classes[participant.group_type]
-                    td= participant.daily_proof ? "yes" : "no"
-        
+                    th identity
+                    th score
+                    th total score
+                    th total rounds
+                    th class
+                    th daily proof?
+            tbody
+                each participant in participants
+                    tr
+                        td= participant.identity
+                        td= participant.score
+                        td= participant.total_score
+                        td= participant.total_cycles
+                        td= classes[participant.group_type]
+                        td= participant.daily_proof ? "yes" : "no"
+
     if !staging
         include includes/profileOngoing.pug
     else

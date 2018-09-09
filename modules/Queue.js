@@ -46,11 +46,11 @@ class Queue extends Model
         // 1. create new tail or update existing
         let newTail;
         if (task.id) {
-            newTail = await Queue.query().patchAndFetchById(task.id, {is_head: isHead, is_active: 1, set_active: new Date(Date.now()).toLocaleString()});
+            newTail = await Queue.query().patchAndFetchById(task.id, {is_head: isHead, is_active: 1, set_active: Date.now()});
         } else {
             task.is_head = isHead ? 1 : 0;
             task.is_active = 1;
-            task.set_active = new Date(Date.now()).toLocaleString();
+            task.set_active = Date.now();
             newTail = await Queue.query().insert(task);
         }
 
@@ -75,7 +75,7 @@ class Queue extends Model
         await oldHead.$query().patch({is_head: 0, is_active: 0, queue_order: 0})
 
         if (newHead) {
-            await newHead.$query().patch({is_head: 1, set_active: new Date(Date.now()).toLocaleString()});
+            await newHead.$query().patch({is_head: 1, set_active: Date.now()});
         }
 
         return new Promise( (resolve, reject) => {  
