@@ -36,23 +36,20 @@ app.set('view engine', 'pug');
 
 /* routes */
 app.use('/app', requiresAuth, profileRouter);
-app.use(excludesAuth, indexRouter); // ORDER IS IMPORTANT
+app.use(checkIsLoggedIn, indexRouter); // ORDER IS IMPORTANT
 
-app.post('/push', (req, res) => {
-    const task = req.body;
-    Queue.push(task).then(result => {
-        res.send(result);
-    })
-});
-
-app.post('/pop', (req, res) => {
-    const type = req.body.group_type;
-    Queue.pop(type).then(result => {
-        res.send(result);
-    })
+app.get('/faq', (req, res) => {
+    res.render('faq', {loggedIn: req.loggedIn});
 });
 
 /* middleware */
+function checkIsLoggedIn(req, res, next) {
+    if (req.session.userid) {
+        req.loggedIn = true;
+    }
+    next();
+}
+
 function requiresAuth(req, res, next) {
     if (req.session.userid) {
         next();
@@ -61,12 +58,5 @@ function requiresAuth(req, res, next) {
     }
 }
 
-function excludesAuth(req, res, next) {
-    if (req.session.userid) {
-        res.redirect('/app/profile');
-    } else {
-        next();
-    }
-}
 
 app.listen(3000, () => console.log('listening on 3000!'));
