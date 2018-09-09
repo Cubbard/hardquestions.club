@@ -1,4 +1,4 @@
-h3.red The next round will begin after #[b "#{cycle.begin_after}"] when there are at least two participants #[small (#{cycle.total_participants} so far)]
+h3.red The next round will begin after #[b "#{new Date(cycle.begin_after).toISOString()}"] when there are at least two participants #[small (#{cycle.total_participants} so far)]
 
 .well
     if !user.next_cycle

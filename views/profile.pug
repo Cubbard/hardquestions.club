@@ -13,25 +13,26 @@ block content
                 p You have submitted your daily proof
     hr
     h2 Participants
-    table.users
-        thead
-            tr
-                th identity
-                th score
-                th total score
-                th total rounds
-                th class
-                th daily proof?
-        tbody
-            each participant in participants
+    .table-container
+        table.users
+            thead
                 tr
-                    td= participant.identity
-                    td= participant.score
-                    td= participant.total_score
-                    td= participant.total_cycles
-                    td= classes[participant.group_type]
-                    td= participant.daily_proof ? "yes" : "no"
-        
+                    th identity
+                    th score
+                    th total score
+                    th total rounds
+                    th class
+                    th daily proof?
+            tbody
+                each participant in participants
+                    tr
+                        td= participant.identity
+                        td= participant.score
+                        td= participant.total_score
+                        td= participant.total_cycles
+                        td= classes[participant.group_type]
+                        td= participant.daily_proof ? "yes" : "no"
+
     if !staging
         include includes/profileOngoing.pug
     else
