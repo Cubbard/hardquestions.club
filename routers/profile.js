@@ -8,6 +8,8 @@ const User  = require('../modules/User.js');
 const Cycle = require('../modules/Cycle.js');
 const Queue = require('../modules/Queue.js');
 
+const checkCycle = require('../middleware/checkCycle.js');
+const ProfileController = require('../controllers/ProfileController');
 
 // Maybe shouldn't do it this way... Testing
 router.get('/profile', checkCycle, checkExpiration, (req, res) => {
@@ -98,88 +100,13 @@ async function checkExpiration(req, res, next) {
             users.forEach(async user => {
                 let daily = head.points * (user.daily_proof ? 1 : -1);
                 let score = user.score + daily;
-                await user.$query().patch({score: (user.score + score), total_score: (user.total_score + daily), daily_proof: 0});
+                await user.$query().patch({score: score, total_score: (user.total_score + daily), daily_proof: 0});
             });
             let old = await Queue.pop(head.group_type);
             Queue.push(old);
         }
     });
     next();
-}
-
-// Cycle expiration
-const now = () => Date.now();
-const plusWeek = date => date + (CYCLE_LENGTH * 7 * 24 * 60 * 60 * 1000);
-const plusDay = date => date + (24 * 60 * 60 * 1000);
-const isInProgress = cycle => cycle && cycle.begin_date ? now() < plusWeek(cycle.begin_date) : false;
-const isInStaging = cycle => now() < cycle.begin_after;
-
-const hasParticipants = async function(cycle) {
-    const users = await cycle.$relatedQuery('participants');
-    return users.length >= 2;
-}
-
-async function checkCycle(req, res, next) {
-    req.staging = true;
-
-    let currentCycle = await Cycle.query().whereNull('end_date').first();
-    if (isInProgress(currentCycle) && await hasParticipants(currentCycle)) {
-        req.staging = false;
-        next();
-    }
-    else {
-        await Queue.query().patch({is_active: 0});
-        
-        if (!currentCycle || currentCycle.begin_date) { // need to create new
-            if (currentCycle)
-                await currentCycle.$query().patch({end_date: now()});
-            
-            let params = {
-                total_participants: 0,
-                score_sum: 0,
-                begin_after: plusDay(currentCycle ? currentCycle.end_date : now())
-            }
-            currentCycle = await Cycle.query().insert(params);
-        }
-        
-        let users = await User.query().where('next_cycle', '=', 1);
-        await currentCycle.$query().patch({total_participants: users.length});
-
-        if (isInStaging(currentCycle)) {
-            return next();
-        }
-
-        if (users.length >= 2) {
-            req.staging = false;
-            await currentCycle.$query().patch({begin_date: now()});
-
-            // assign user classes
-            let unassigned = ['A', 'S', 'K', 'L'], updated = [];
-
-            // assign king
-            let king  = users[Math.floor(Math.random() * users.length)];
-            king.group_type = 'Q'
-            updated.push(king);
-
-            users = users.filter(elem => elem.id !== king.id);
-            while (unassigned.length > 0) {
-                if (users.length === 0) break;
-
-                let user = users.pop();
-                let type = unassigned[Math.floor(Math.random() * unassigned.length)];
-                user.group_type = type;
-                updated.push(user);
-                unassigned = unassigned.filter(elem => elem !== type);
-            }
-
-            updated.forEach(async user => {
-                await user.$query().patch({cycle_id: currentCycle.id, next_cycle: 0, score: 0, group_type: user.group_type, total_cycles: (user.total_cycles + 1)});
-            })
-
-            return next();
-        }
-        next();
-    }
 }
 
 

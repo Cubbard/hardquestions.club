@@ -71,10 +71,54 @@ nav ul li:last-of-type {
     margin-right: 0;
 }
 
+nav ul li.nested {
+    position: relative;
+}
+
+nav ul li.nested ul li a {
+    display: block;
+    width: 100%;
+}
+
+nav ul li.nested:after {
+    content: "\25bc";
+    font-size: 12px;
+    color: white;
+    margin-left: 0.25em;
+}
+
 nav ul li a {
     text-decoration: none;
     color: hsl(0, 0%, 95%);
     vertical-align: middle;
+}
+
+nav ul li.nested ul {
+    list-style-type: none;
+    display: none;
+    position: absolute;
+    max-width: 16em;
+    top: 100%;
+    left: 0;
+    background-color: hsl(0, 0%, 20%);
+}
+
+nav ul li.nested:hover ul {
+    display: block;
+}
+
+nav ul li.nested:hover ul li {
+    margin: 0;
+    padding-left: 0.5em;
+}
+
+nav ul li.nested ul li {
+    display: inline-block;
+    min-width: 8em;
+}
+
+nav ul li.nested ul li:hover {
+    background-color: hsl(0, 0%, 35%);
 }
 
 /* tables */

@@ -1,4 +1,4 @@
-extends templates/master.pug
+extends ../layouts/profile.pug
 block content
     - const classes = {'A': 'Animal', 'S': 'Serf', 'K': 'Knight', 'L': 'Lord', 'Q': 'King'};
     h1 !{`${user.identity} - ${classes[user.group_type] || '(class not assigned)'}`}
