@@ -31,22 +31,22 @@ class Cycle extends Model
         return Cycle.query().whereNull('end_date').first();
     }
 
-    static plusStagingDuration(date) {
+    static plusStagingDuration(time) {
         //return date.plusDay(date);
-        return date + (60 * 1000);
+        return time + (60 * 60 * 1000);
     }
 
-    static plusCycleDuration(date) {
+    static plusCycleDuration(time) {
         //return date.plusWeek(date);
-        return date + (60 * 1000);
+        return time + (60 * 60 * 1000);
     }
 
     static isInStaging(cycle) {
-        date.now() < cycle.begin_after;
+        return date.now() < cycle.begin_after;
     }
 
     static isInProgress(cycle) {
-        cycle.begin_date ? date.now() < this.plusCycleDuration(cycle.begin_date) : false;
+        return cycle.begin_date ? date.now() < this.plusCycleDuration(cycle.begin_date) : false;
     }
 }
 

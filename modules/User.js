@@ -26,7 +26,11 @@ class User extends Model
     }
 
     static activeUsers(group_type) {
-        return User.query().whereNotNull('cycle_id').andWhere('group_type', '=', group_type);
+        let builder = User.query().whereNotNull('cycle_id');
+        if (group_type)
+            return builder.andWhere('group_type', '=', group_type);
+        else
+            return builder;
     }
 }
 

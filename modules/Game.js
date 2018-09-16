@@ -3,8 +3,8 @@ const date = require('./date.js');
 
 class Game
 {
-    static start(cycle) {
-        cycle.$query().patch({begin_date: date.now()});
+    static async start(cycle) {
+        await cycle.$query().patch({begin_date: date.now()});
     }
 
     static assignRoles(users) {
@@ -30,8 +30,8 @@ class Game
         // assign remaining users
     }
 
-    static resetTasks() {
-        Queue.query().patch({is_active: 0, queue_order: 0, is_head: 0});
+    static async resetTasks() {
+        await Queue.query().patch({is_active: 0, queue_order: 0, is_head: 0});
     }
 
     static assignTasks() {

@@ -2,12 +2,16 @@ const Cycle = require('../modules/Cycle.js');
 const User  = require('../modules/User.js');
 const date  = require('../modules/date.js');
 const Game  = require('../modules/Game');
+const {cycleLogger} = require('../modules/loggers.js');
 
 module.exports = checkCycle;
+
 
 async function checkCycle(req, res, next) {
     req.staging = true;
     let ongoing = await Cycle.ongoing();
+
+    cycleLogger(ongoing);
 
     if (Cycle.isInProgress(ongoing)) {
         req.staging = false;
@@ -18,6 +22,9 @@ async function checkCycle(req, res, next) {
 
         if (ongoing.begin_date) { // need to create new
             await ongoing.$query().patch({end_date: date.now()});
+
+            console.log('...new cycle created');
+            cycleLogger(ongoing);
 
             let params = {total_participants: participants.length, begin_after: Cycle.plusStagingDuration(ongoing.end_date)};
             ongoing = await Cycle.query().insert(params);
@@ -33,7 +40,6 @@ async function checkCycle(req, res, next) {
 
             // start new cycle
             Game.start(ongoing);
-
             Game.assignRoles(participants);
             // save
             participants.forEach(async user => {
@@ -43,6 +49,7 @@ async function checkCycle(req, res, next) {
             Game.resetTasks();
             //Game.assignTasks();
         }
+        console.log('---'); // for end of cycle logging
         next();
     }
 }
