@@ -16,5 +16,7 @@ router.get('/profile', checkCycle, checkExpiration, (...args) => ProfileControll
 router.get('/logout', (...args) => ProfileController.logout(...args).catch(e => console.log(e.message)));
 router.post('/push', (...args) => ProfileController.push(...args).catch(e => console.log(e.message)));
 router.get('/getTask', (...args) => ProfileController.getTask(...args).catch(e => console.log(e.message)));
+router.post('/proof', (...args) => ProfileController.submitProof(...args).catch(e => console.log(e.message)));
+router.get('/proof', (...args) => ProfileController.proof(...args).catch(e => console.log(e.message)));
 
 module.exports = router;

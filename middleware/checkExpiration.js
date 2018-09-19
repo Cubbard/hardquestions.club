@@ -7,7 +7,7 @@ module.exports = checkExpiration;
 async function checkExpiration(req, res, next) {
     const heads = await Queue.whereActive().andWhere('is_head', '=', 1);
     heads.forEach(async head => {
-        if (date.now() > date.plusDay(head.set_active)) {
+        if (date.now() > date.plusDays(head.set_active, head.expires)) {
             let users = await User.activeUsers(head.group_type);
             users.forEach(async user => {
                 let daily = head.points * (user.daily_proof ? 1 : -1);

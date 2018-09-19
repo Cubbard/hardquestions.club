@@ -1,0 +1,10 @@
+extends ../layouts/profile.pug
+
+block content
+    each proof in proofs
+        if proof.media_url
+            img(src=proof.media_url, width="100px", height="100px")
+        p= proof.descr
+        .well
+            p like: #{proof.like_it}
+            p suck: #{proof.suck_it}

@@ -10,7 +10,7 @@ const indexRouter   = require('./routers/index.js');
 const bodyParser = require('body-parser');
 const cookParser = require('cookie-parser');
 const session    = require('express-session');
-
+const fileUpload = require('express-fileupload');
 /* middleware */
 const requiresAuth = require('./middleware/requiresAuth.js');
 
@@ -24,6 +24,8 @@ app.use(session({
         maxAge: 600000
     }
 }));
+
+app.use(fileUpload());
 
 app.use('/public', express.static('./public'));
 app.set('view engine', 'pug');
