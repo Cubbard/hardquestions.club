@@ -28,9 +28,11 @@ class Queue extends Model
         return Queue.query().where('is_active', '=', 1).andWhere('group_type', '=', group_type).andWhere('is_head', '=', 1).first()
     }
 
-    static async whereActive(group_type) {
-        /* TODO: would rather make this return the query builder */
-        return Queue.query().where('is_active', '=', 1).andWhere('group_type', '=', group_type);
+    static whereActive(group_type) {
+        if (!group_type)
+            return Queue.query().where('is_active', '=', 1);
+        else        
+            return Queue.query().where('is_active', '=', 1).andWhere('group_type', '=', group_type);
     }
 
     static async next(group_type, order) {

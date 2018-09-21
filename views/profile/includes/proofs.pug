@@ -1,0 +1,9 @@
+each proof, i in proofs
+    .proof(data-index=i+start)
+        h3 #{proof.createUser.identity} #[small= new Date(proof.submitted).toLocaleString()]
+        if proof.media_url
+            .proof-media
+                img(src=proof.media_url, alt="proof picture")
+        .proof-text
+            p= proof.descr
+        small like:  #[span.rating= proof.like_it]  suck: #[span.rating= proof.suck_it]

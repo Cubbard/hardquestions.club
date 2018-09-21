@@ -1,0 +1,164 @@
+extends ../layouts/profile.pug
+block content
+    - const classes = {'A': 'Animal', 'S': 'Serf', 'K': 'Knight', 'L': 'Lord', 'Q': 'King'};
+    - const king = user.group_type === 'Q'
+
+    #modal.modal(data-state="hidden")
+        .modal-content
+            form(action="/app/proof", method="POST", enctype="multipart/form-data")
+                .field
+                    label(for="media") Media
+                    input(type="file", name="media")
+                .field
+                    label(for="notes") Notes
+                    input(type="text", name="notes")
+                .field
+                    label(for="suck") Suck
+                    select(name="suck")
+                        option 1
+                        option 3
+                        option 5
+                        option 7
+                        option 9
+                        option 10
+                .field
+                    label(for="like") Like
+                    select(name="like")
+                        option 1
+                        option 3
+                        option 5
+                        option 7
+                        option 9
+                        option 10
+                input(type="submit", value="submit")
+
+    if formErrors
+        .error
+            p= formErrors
+            
+    h1 !{`${user.identity} - ${classes[user.group_type] || '(class not assigned)'}`}
+    p !{`score: ${user.score}, total score: ${user.total_score}, total rounds: ${user.total_cycles}`}
+    if user.daily_proof
+        p You have submitted your daily proof!
+    else
+        p
+            button#proof Submit Proof
+    hr
+    h2 Participants
+    .table-container
+        table.users
+            thead
+                tr
+                    th identity
+                    th score
+                    th total score
+                    th total rounds
+                    th class
+                    th daily proof?
+            tbody
+                each participant in participants
+                    tr
+                        td= participant.identity
+                        td= participant.score
+                        td= participant.total_score
+                        td= participant.total_cycles
+                        td= classes[participant.group_type]
+                        td= participant.daily_proof ? "yes" : "no"
+
+    if king
+        include includes/taskForm.pug
+    include includes/taskQueue.pug
+
+block scripts
+    script.
+        // task viewer
+        const shift = document.getElementById("next");
+        const slide = document.getElementById("slide");
+
+        // proof submission
+        const proof = document.getElementById("proof");
+        const modal = document.getElementById("modal");
+
+        shift.addEventListener('click', e => {
+            e.preventDefault();
+            let index = parseInt(slide.dataset.index);
+            slide.dataset.index = (index + 1) % 5;
+        });
+
+        proof.addEventListener('click', e => {
+            modal.dataset.state = 'show';
+        })
+
+        modal.addEventListener('click', e => {
+            if (e.target.dataset) {
+                let current = e.target.dataset.state;
+                if (current === 'show')
+                    modal.dataset.state = 'hidden';
+            }
+        });
+
+        // do the loop stuff
+        const tasks = document.querySelectorAll('.task.head');
+        (function loop() {
+                setTimeout(loop, 1000);
+                tasks.forEach(task => {
+                    const remaining = parseInt(task.dataset.expires) - Date.now().valueOf();
+                    const date = {
+                        days: Math.round(remaining / 1000 / 60 / 60 / 24),
+                        mins: Math.round(remaining / 1000 / 60),
+                        secs: Math.round(remaining / 1000)
+                    }
+                    task.querySelector('footer small').innerHTML = `days: ${date.days}, min: ${date.mins}, secs: ${date.secs}`;
+                })
+            }
+        )();
+
+    if king
+        script.
+            // King related JS
+            let getTask  = document.getElementById('getTask');
+            let createTask = document.getElementById('createTask');
+            let taskForm = document.getElementById('taskForm');
+
+            const id         = document.querySelector('input[name="id"]');
+            const title      = taskForm.querySelector('input[name="title"]');
+            const descr      = taskForm.querySelector('textarea[name="descr"]');
+            const points     = taskForm.querySelector('input[name="points"]');
+            const group_type = taskForm.querySelector('select[name="group_type"]');
+
+            createTask.addEventListener('click', e => {
+                e.preventDefault();
+                id.value = "";
+                title.value = "";
+                descr.value = "";
+                points.value = "";
+
+                title.readOnly = false;
+                descr.readOnly = false;
+                group_type.readOnly = false;
+            });
+            getTask.addEventListener('click', e => {
+                e.preventDefault();
+                let xhr = new XMLHttpRequest();
+                xhr.addEventListener('load', function() {
+                    let dat = JSON.parse(this.responseText);
+                    if (dat.error) {
+                        alert(dat.error);
+                    } else {
+
+                        id.value    = dat.id;
+                        title.value = dat.title;
+                        descr.value = dat.descr;
+                        points.value = dat.points;
+
+                        title.readOnly = true;
+                        descr.readOnly = true;
+                        group_type.readOnly = true;
+                        points.readOnly = true;
+                    }
+
+                })
+
+                xhr.open("GET", "/app/getTask?group_type=" + taskForm.querySelector('select[name="group_type"]').value);
+                xhr.send();
+            })

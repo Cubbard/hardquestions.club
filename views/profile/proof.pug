@@ -1,0 +1,36 @@
+extends ../layouts/profile.pug
+
+block content
+    h1 Daily Proof
+    .proofs
+        
+    p.center
+        a(href="#", id="more") load more content
+
+block scripts
+    script.
+        let proofElems = document.querySelectorAll('.proof'), lastProof = proofElems[proofElems.length - 1];
+        
+        let start = !lastProof ? 0 : null;
+
+        if (start === 0) {
+            getProofs(start);
+        }
+
+        document.getElementById('more').addEventListener('click', e => {
+            e.preventDefault();
+            getProofs(start);
+        });
+
+        function getProofs(index) {
+            let xhr = new XMLHttpRequest();
+            xhr.addEventListener('load', function() {
+                document.querySelector('.proofs').innerHTML += this.responseText;
+                proofElems = document.querySelectorAll('.proof');
+                lastProof = proofElems[proofElems.length - 1];
+                start = parseInt(lastProof.dataset.index);
+            })
+
+            xhr.open("GET", "/app/getProofs?start=" + index);
+            xhr.send();
+        }
