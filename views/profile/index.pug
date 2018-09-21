@@ -38,8 +38,11 @@ block content
             
     h1 !{`${user.identity} - ${classes[user.group_type] || '(class not assigned)'}`}
     p !{`score: ${user.score}, total score: ${user.total_score}, total rounds: ${user.total_cycles}`}
-    p
-        button#proof Submit Proof
+    if user.daily_proof
+        p You have submitted your daily proof!
+    else
+        p
+            button#proof Submit Proof
     hr
     h2 Participants
     .table-container

@@ -7,5 +7,6 @@ create table proof (
     user_id     bigint not null,
     suck_it     tinyint(2) not null,
     like_it     tinyint(2) not null,
+    submitted   bigint,
     foreign key(user_id) references user(id)
 );

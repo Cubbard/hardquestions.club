@@ -105,7 +105,8 @@ class ProfileController
             descr: notes,
             suck_it: suck,
             like_it: like,
-            user_id: req.session.userid
+            user_id: req.session.userid,
+            submitted: Date.now()
         };
 
         if (media) {
@@ -137,18 +138,30 @@ class ProfileController
         }
 
         // insert into proof
-        Proof.query().insert(insert).then(result => {
+        Proof.query().insert(insert).then(_ => {
             console.log({notes, suck, like});
-            res.redirect('/app/proof');
+
+            User.query().findById(req.session.userid).patch({daily_proof: 1}).then(result => {
+                res.redirect('/app/proof');
+            })
         });
     }
 
     static async proof(req, res, next) {
-        Proof.query().then(proofs => {
+        Proof.query().eager('createUser').orderBy('id', 'desc').then(proofs => {
             let model = req.model || {};
             model.proofs = proofs;
             model.loggedIn = true;
+            model.start = 1;
             res.render('profile/proof', model);
+        })
+    }
+
+    static async getProofs(req, res, next) {
+        let {start} = req.query;
+        start = parseInt(start);
+        Proof.query().orderBy('id', 'desc').eager('createUser').range(start, start + 5).then(result => {
+            res.render('profile/includes/proofs', {start: start + 1, proofs: result.results, loggedIn: true});
         })
     }
 }

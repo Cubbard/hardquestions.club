@@ -18,5 +18,6 @@ router.post('/push', (...args) => ProfileController.push(...args).catch(e => con
 router.get('/getTask', (...args) => ProfileController.getTask(...args).catch(e => console.log(e.message)));
 router.post('/proof', (...args) => ProfileController.submitProof(...args).catch(e => console.log(e.message)));
 router.get('/proof', (...args) => ProfileController.proof(...args).catch(e => console.log(e.message)));
+router.get('/getProofs', (...args) => ProfileController.getProofs(...args).catch(e => console.log(e.message)));
 
 module.exports = router;

@@ -1,10 +1,36 @@
 extends ../layouts/profile.pug
 
 block content
-    each proof in proofs
-        if proof.media_url
-            img(src=proof.media_url, width="100px", height="100px")
-        p= proof.descr
-        .well
-            p like: #{proof.like_it}
-            p suck: #{proof.suck_it}
+    h1 Daily Proof
+    .proofs
+        
+    p.center
+        a(href="#", id="more") load more content
+
+block scripts
+    script.
+        let proofElems = document.querySelectorAll('.proof'), lastProof = proofElems[proofElems.length - 1];
+        
+        let start = !lastProof ? 0 : null;
+
+        if (start === 0) {
+            getProofs(start);
+        }
+
+        document.getElementById('more').addEventListener('click', e => {
+            e.preventDefault();
+            getProofs(start);
+        });
+
+        function getProofs(index) {
+            let xhr = new XMLHttpRequest();
+            xhr.addEventListener('load', function() {
+                document.querySelector('.proofs').innerHTML += this.responseText;
+                proofElems = document.querySelectorAll('.proof');
+                lastProof = proofElems[proofElems.length - 1];
+                start = parseInt(lastProof.dataset.index);
+            })
+
+            xhr.open("GET", "/app/getProofs?start=" + index);
+            xhr.send();
+        }

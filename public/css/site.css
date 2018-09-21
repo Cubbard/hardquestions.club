@@ -226,6 +226,10 @@ h4 {font-size: 1.25em;}
 
 small, .font_small {font-size: 0.8em;}
 
+p.center {
+    text-align: center;
+}
+
 .content-wrapper {
     width: 100%;
     padding: 0 1em;
@@ -366,6 +370,48 @@ small, .font_small {font-size: 0.8em;}
 footer {
     padding: 1.5em 0.25em;
     border-top: 1px solid hsl(0, 0%, 80%);
+}
+
+/* proof stuff */
+.proof {
+    padding: 0.5em;
+    background: hsl(0, 0%, 98%);
+    border-radius: 3px;
+    margin-bottom: 1.5em;
+    box-shadow: 0 1px 2px hsl(0, 0%, 40%);
+}
+
+.proof h3 {
+    margin-top: 0;
+}
+
+.proof-media {
+    background-color: hsl(0, 0%, 90%);
+    text-align: center;
+    padding: 0.33em;
+    border-radius: 3px;
+    border: 6px dashed hsl(0, 0%, 70%);
+}
+
+.proof-media img {
+    display: inline-block;
+    vertical-align: middle;
+    max-width: 100%;
+}
+
+.proof-text {
+    font-size: 1.2em;
+    padding-left: 0.25em;
+    border-left: 2px solid hsl(0, 0%, 85%);
+}
+
+.proof span.rating {
+    font-weight: bold;
+    font-size: 1.2em;
+    color: white;
+    padding: 0.33em 0.5em;
+    border-radius: 3px;
+    background-color: hsl(0, 0%, 10%);
 }
 
 /* dummies */
