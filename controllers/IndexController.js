@@ -1,4 +1,5 @@
 const Crypto = require('../modules/Crypto.js');
+const AccountRequest = require('../modules/AccountRequest.js');
 const {PageModel} = require('../modules/pageProps.js');
 
 class IndexController
@@ -30,6 +31,37 @@ class IndexController
                 res.redirect('/');
             }
         });
+    }
+
+    static async request(req, res, next) {
+        const {identity, password, email} = req.body
+
+        let salt = Crypto.getSalt(), pepp = Crypto.getPepper(), pass_hash = Crypto.createHash(password, salt, pepp);
+        let params = {
+            identity,
+            salt,
+            pass_hash,
+            email
+        }
+        AccountRequest.query().insert(params).then(result => {
+            res.redirect('/thanks');
+        })
+    }
+
+    static async earlyAccess(req, res, next) {
+        res.render('early-access');
+    }
+
+    static async faq(req, res, next) {
+        res.render('faq');
+    }
+
+    static async guide(req, res, next) {
+        res.render('guide');
+    }
+
+    static async thanks(req, res, next) {
+        res.render('thanks');
     }
 }
 

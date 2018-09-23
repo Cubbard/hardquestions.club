@@ -13,8 +13,14 @@ const session    = require('express-session');
 const fileUpload = require('express-fileupload');
 /* middleware */
 const requiresAuth = require('./middleware/requiresAuth.js');
+const date = require('./modules/date.js');
 
 /* app config */
+
+app.locals.date = date; // hell yeah
+app.locals.classes = require('./data/config.js').classes;
+
+
 app.use(cookParser());
 app.use(bodyParser());
 app.use(session({
@@ -24,8 +30,16 @@ app.use(session({
         maxAge: 600000
     }
 }));
-
 app.use(fileUpload());
+
+app.use((req, res, next) => {
+    if (req.session.userid) {
+        res.locals.loggedIn = true;
+    } else {
+        res.locals.loggedIn = false;
+    }
+    next();
+});
 
 app.use('/public', express.static('./public'));
 app.set('view engine', 'pug');

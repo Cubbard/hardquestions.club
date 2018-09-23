@@ -1,6 +1,29 @@
 extends ../layouts/profile.pug
 block content
-    h1 Staging
-    h2 Thank you for participating!
-    p.
-        #[b The next round will begin after] 
+    h1= user.identity
+    h2 Staging
+    h3 Participating
+    
+    include includes/participants.pug
+    p
+        b #{participants.length} other member(s) participating
+
+    if !user.cycle || user.cycle.id !== ongoing.id
+        p.
+            #[form(action="/app/join", method="POST") #[input(type="submit" value="Join")]]
+    else
+        p.
+            You are participating!
+
+    if cycle.end_date && !ongoing.begin_date
+        p.
+            The next round will begin after #[b.red #{new Date(date.plusDay(ongoing.begin_after)).toLocaleString()}] 
+            when at least two participants have joined.
+
+    // end prev. round...
+
+
+append scripts
+    script.
+
+    

@@ -1,0 +1,26 @@
+extends layouts/visitor.pug
+
+block content
+    h1 Early Access
+    p.
+        This website is still very young, but we are laying new bricks every day! If you are interested
+        in joining the hardquestions club during this early access period, you can request an account here
+        with your desired username and password (this site isn't very secure right now so don't do this at a coffee shop please).
+    p.
+        After reviewing your request we may like to have a brief exchange through Google's
+        Hangouts to make sure you aren't a psycho-path. Once your account is activated,
+        you can #[a(href="/login") login] and join the fun!
+    h3 Account Request
+    form(action="/request", method="POST")
+        .field
+            label(for="name") Desired identity
+            input(type="text", name="identity", placeholder="ex: slickboi")
+        .field
+            label(for="password") Desired password
+            input(type="password", name="password")
+        .field
+            label(for="email") Contact email
+            input(type="text", name="email")
+
+
+        input(type="submit", value="submit")

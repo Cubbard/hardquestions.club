@@ -6,6 +6,7 @@ p
 .well
     form#taskForm(action="/app/push", method="POST")
         input(type="hidden", name="id")
+        input#hiddenDex(type="hidden", name="index", value="0", disabled)
         .field
             label(for="group_type") Class:&nbsp
             select(name="group_type")

@@ -3,7 +3,8 @@
     .queue-controls
         p
             a(href="#")#next.queue-shift next
-    #slide.queue-slide(data-index=0)
+    - const index = Object.keys(classes).indexOf(user.group_type)
+    #slide.queue-slide(data-index=index)
         each tasks, group_type in queues
             .queue(data-type=group_type)
                 .topper

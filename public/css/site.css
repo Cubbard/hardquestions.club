@@ -385,12 +385,17 @@ footer {
     margin-top: 0;
 }
 
+.proof h3 small {
+    font-weight: 400;
+    color: hsl(0, 0%, 40%);
+}
+
 .proof-media {
     background-color: hsl(0, 0%, 90%);
     text-align: center;
-    padding: 0.33em;
+    padding: 0.5em;
     border-radius: 3px;
-    border: 6px dashed hsl(0, 0%, 70%);
+    border: 4px dashed hsl(0, 0%, 70%);
 }
 
 .proof-media img {
@@ -407,11 +412,27 @@ footer {
 
 .proof span.rating {
     font-weight: bold;
+    display: inline-block;
     font-size: 1.2em;
     color: white;
-    padding: 0.33em 0.5em;
     border-radius: 3px;
-    background-color: hsl(0, 0%, 10%);
+    min-width: 3em;
+    text-align: right;
+    padding-right: 0.2em;
+}
+
+.proof span.rating.like {
+    background-color: #99c0ff;
+    border: 2px solid #3d87ff;
+}
+
+.proof span.rating.suck {
+    background-color: #ff919e;
+    border: 2px solid #ff4c61;
+}
+
+.centered-picture img {
+    max-width: 80%;
 }
 
 /* dummies */
