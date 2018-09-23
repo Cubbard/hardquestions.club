@@ -13,6 +13,7 @@ router.get('/', excludesAuth, (...args) => IndexController.index(...args).catch(
 router.get('/early-access', (...args) => IndexController.earlyAccess(...args).catch(e => console.log(e.message)));
 router.get('/faq', (...args) => IndexController.faq(...args).catch(e => console.log(e.message)));
 router.get('/thanks', (...args) => IndexController.thanks(...args).catch(e => console.log(e.message)));
+router.get('/guide', (...args) => IndexController.guide(...args).catch(e => console.log(e.message)));
 router.post('/request', (...args) => IndexController.request(...args).catch(e => console.log(e.message)));
 router.route('/login')
     .get(excludesAuth, (...args) => IndexController.login(...args).catch(e => console.log(e.message)))

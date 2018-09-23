@@ -56,6 +56,10 @@ class IndexController
         res.render('faq');
     }
 
+    static async guide(req, res, next) {
+        res.render('guide');
+    }
+
     static async thanks(req, res, next) {
         res.render('thanks');
     }
