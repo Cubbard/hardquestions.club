@@ -1,6 +1,5 @@
 extends ../layouts/profile.pug
 block content
-    - const classes = {'A': 'Animal', 'S': 'Serf', 'K': 'Knight', 'L': 'Lord', 'Q': 'King'};
     - const king = user.group_type === 'Q'
 
     #modal.modal(data-state="hidden")
@@ -45,25 +44,7 @@ block content
             button#proof Submit Proof
     hr
     h2 Participants
-    .table-container
-        table.users
-            thead
-                tr
-                    th identity
-                    th score
-                    th total score
-                    th total rounds
-                    th class
-                    th daily proof?
-            tbody
-                each participant in participants
-                    tr
-                        td= participant.identity
-                        td= participant.score
-                        td= participant.total_score
-                        td= participant.total_cycles
-                        td= classes[participant.group_type]
-                        td= participant.daily_proof ? "yes" : "no"
+    include includes/participants.pug
 
     if king
         include includes/taskForm.pug
@@ -155,10 +136,16 @@ block scripts
                         descr.readOnly = true;
                         group_type.readOnly = true;
                         points.readOnly = true;
+
+                        let index = parseInt(document.getElementById("hiddenDex").value);
+                        document.getElementById("hiddenDex").value = index + 1;
                     }
 
                 })
 
-                xhr.open("GET", "/app/getTask?group_type=" + taskForm.querySelector('select[name="group_type"]').value);
+                let url = "/app/getTask?group_type=";
+                url += taskForm.querySelector('select[name="group_type"]').value;
+                url += "&index=" + document.getElementById("hiddenDex").value;
+                xhr.open("GET", url);
                 xhr.send();
             })

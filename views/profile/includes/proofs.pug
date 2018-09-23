@@ -6,4 +6,4 @@ each proof, i in proofs
                 img(src=proof.media_url, alt="proof picture")
         .proof-text
             p= proof.descr
-        small like:  #[span.rating= proof.like_it]  suck: #[span.rating= proof.suck_it]
+        small like:  #[span.rating.like= proof.like_it]  suck: #[span.rating.suck= proof.suck_it]

@@ -28,6 +28,9 @@ class Game
         }
 
         // assign remaining users
+        updated.forEach(async user => {
+            await user.$query().patch({group_type: user.group_type});
+        })
     }
 
     static async resetTasks() {
@@ -49,6 +52,11 @@ class Game
         Queue.push(firstK);
         Queue.push(firstL);
         Queue.push(firstQ);
+    }
+
+    static assignClass(user) {
+        let unassigned = ['A', 'S', 'K', 'L'];
+        return user.$query().patch({group_type: unassigned[Math.floor(Math.random() * unassigned.length)]});
     }
 }
 

@@ -28,7 +28,7 @@ class Cycle extends Model
     }
 
     static ongoing() {
-        return Cycle.query().whereNull('end_date').first();
+        return Cycle.query().eager('participants').whereNull('end_date').first();
     }
 
     static plusStagingDuration(time) {
