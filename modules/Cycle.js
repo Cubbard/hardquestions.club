@@ -32,13 +32,11 @@ class Cycle extends Model
     }
 
     static plusStagingDuration(time) {
-        //return date.plusDay(date);
-        return time + (60 * 60 * 1000);
+        return date.plusDay(date);
     }
 
     static plusCycleDuration(time) {
-        //return date.plusWeek(date);
-        return time + (60 * 60 * 1000);
+        return date.plusWeek(date);
     }
 
     static isInStaging(cycle) {
