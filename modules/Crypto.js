@@ -73,6 +73,13 @@ class Crypto
         return sha256(message.substring(0, randPos) + this.getPepper() + message.substring(randPos) + this.getSalt());
     }
 
+    static createHash(msg, salt, pepper) {
+        const mLength = msg.length;
+        const randPos = Math.floor(Math.random() * mLength);
+
+        return sha256(msg.substring(0, randPos) + pepper + msg.substring(randPos) + salt);
+    }
+
 }
 
 module.exports = Crypto;
